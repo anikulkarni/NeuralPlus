@@ -1,0 +1,38 @@
+name: Feature request
+description: Propose an improvement or new capability
+title: "[Feature]: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What concrete problem should NeuralPlus solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Describe the public behavior or API, not only the implementation.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Core model/tool runtime
+        - Provider client
+        - Tracing or replay
+        - OpenTelemetry
+        - MCP
+        - RAG
+        - Build or portability
+        - Documentation
+    validations:
+      required: true
