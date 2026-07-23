@@ -153,7 +153,7 @@ long milliseconds_as_long(std::chrono::milliseconds value,
         throw ConfigurationError(
             std::string(option_name) + " must be greater than zero");
     }
-    if (value.count() > std::numeric_limits<long>::max()) {
+    if (value.count() > (std::numeric_limits<long>::max)()) {
         throw ConfigurationError(std::string(option_name) + " is too large");
     }
     return static_cast<long>(value.count());
@@ -195,7 +195,8 @@ struct HeaderWriteContext {
 std::optional<std::size_t> callback_bytes(std::size_t item_size,
                                           std::size_t item_count) {
     if (item_size != 0 &&
-        item_count > std::numeric_limits<std::size_t>::max() / item_size) {
+        item_count >
+            (std::numeric_limits<std::size_t>::max)() / item_size) {
         return std::nullopt;
     }
     return item_size * item_count;
@@ -209,7 +210,7 @@ std::size_t write_body(char* data,
     const auto bytes = callback_bytes(item_size, item_count);
     if (!bytes.has_value() ||
         *bytes > context->limit -
-                     std::min(context->body->size(), context->limit)) {
+                     (std::min)(context->body->size(), context->limit)) {
         context->limit_exceeded = true;
         return 0;
     }
@@ -230,7 +231,7 @@ std::size_t write_header(char* data,
     const auto bytes = callback_bytes(item_size, item_count);
     if (!bytes.has_value() ||
         *bytes > context->limit -
-                     std::min(context->received, context->limit)) {
+                     (std::min)(context->received, context->limit)) {
         context->limit_exceeded = true;
         return 0;
     }
@@ -376,7 +377,8 @@ HttpResponse CurlHttpTransport::send(const HttpRequest& request) {
     }
     if (request.method != HttpMethod::get) {
         if (request.body.size() >
-            static_cast<std::size_t>(std::numeric_limits<curl_off_t>::max())) {
+            static_cast<std::size_t>(
+                (std::numeric_limits<curl_off_t>::max)())) {
             throw ConfigurationError("HTTP request body is too large");
         }
         set_option(handle.value, CURLOPT_POSTFIELDS,
