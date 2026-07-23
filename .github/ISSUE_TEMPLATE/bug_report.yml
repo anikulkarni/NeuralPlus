@@ -1,3 +1,6 @@
+# Copyright 2026 Aniket Kulkarni
+# SPDX-License-Identifier: Apache-2.0
+
 name: Bug report
 description: Report reproducible incorrect behavior
 title: "[Bug]: "
@@ -37,3 +40,4 @@ body:
     attributes:
       label: Sanitized logs
       render: shell
+      description: Remove credentials, prompts, responses, tool payloads, URLs, and personal data.

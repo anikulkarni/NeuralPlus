@@ -1,5 +1,5 @@
 {
-  "version": 6,
+  "version": 2,
   "cmakeMinimumRequired": {
     "major": 3,
     "minor": 20,
@@ -14,6 +14,7 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "NEURALPLUS_BUILD_DOCS": "OFF",
         "NEURALPLUS_BUILD_EXAMPLES": "ON",
         "NEURALPLUS_BUILD_TESTS": "ON",
         "NEURALPLUS_WARNINGS_AS_ERRORS": "ON"
@@ -26,8 +27,21 @@
       "binaryDir": "${sourceDir}/build/release",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
+        "NEURALPLUS_BUILD_DOCS": "OFF",
         "NEURALPLUS_BUILD_EXAMPLES": "ON",
         "NEURALPLUS_BUILD_TESTS": "ON"
+      }
+    },
+    {
+      "name": "docs",
+      "displayName": "API documentation",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/docs",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "NEURALPLUS_BUILD_DOCS": "ON",
+        "NEURALPLUS_BUILD_EXAMPLES": "OFF",
+        "NEURALPLUS_BUILD_TESTS": "OFF"
       }
     }
   ],
@@ -39,6 +53,13 @@
     {
       "name": "release",
       "configurePreset": "release"
+    },
+    {
+      "name": "docs",
+      "configurePreset": "docs",
+      "targets": [
+        "neuralplus_docs"
+      ]
     }
   ],
   "testPresets": [

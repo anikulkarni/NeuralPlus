@@ -1,3 +1,6 @@
+# Copyright 2026 Aniket Kulkarni
+# SPDX-License-Identifier: Apache-2.0
+
 name: Feature request
 description: Propose an improvement or new capability
 title: "[Feature]: "
@@ -26,9 +29,10 @@ body:
     attributes:
       label: Area
       options:
-        - Core model/tool runtime
+        - Client or session runtime
         - Provider client
-        - Tracing or replay
+        - Tool
+        - Tracing or logging
         - OpenTelemetry
         - MCP
         - RAG
