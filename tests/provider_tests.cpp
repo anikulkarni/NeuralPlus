@@ -518,7 +518,9 @@ void test_anthropic_pause_turn_continuation() {
 }
 
 void test_gemini_thought_signature_continuation() {
-    const JsonValue thought_part{{"thought", true}, {"thoughtSignature", "thought-signature"}};
+    const JsonValue thought_part{{"text", "Reasoning summary."},
+                                 {"thought", true},
+                                 {"thoughtSignature", "thought-signature"}};
     const JsonValue function_part{
         {"functionCall",
          JsonValue{
@@ -648,6 +650,15 @@ void test_gemini_thought_signature_continuation() {
     require(response.message.contents().at(1).bytes() ==
                 std::vector<std::uint8_t>({1, 2, 3}),
             "Gemini image output bytes");
+    const Session::Messages transcript = session.messages();
+    require(transcript.at(1).text() == "Checking.",
+            "Gemini thought summary excluded from answer text");
+    require(transcript.at(1).contents().at(0).type() ==
+                ContentType::extension,
+            "Gemini thought summary retained as an extension");
+    require(transcript.at(1).contents().at(0).provider_data() ==
+                thought_part,
+            "Gemini thought summary provider data retained exactly");
 }
 
 void test_gemini_multimodal_tool_result_and_synthetic_id() {
@@ -1068,7 +1079,7 @@ void test_audio_and_file_content_mappings() {
                 require(content.at(2).at("type") == "file",
                         "compatible file input type");
                 require(content.at(2).at("file").at("file_data") ==
-                            "AwQ=",
+                            "data:text/plain;base64,AwQ=",
                         "compatible file input data");
                 require(content.at(2).at("file").at("filename") ==
                             "notes.txt",

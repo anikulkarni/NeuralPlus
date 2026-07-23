@@ -57,7 +57,7 @@ namespace {
         content.source() == ContentSource::bytes) {
         JsonValue file{
             {"file_data",
-             provider_detail::base64_encode(content.bytes())},
+             provider_detail::data_url(content)},
         };
         if (!content.filename().empty()) {
             file["filename"] = content.filename();
