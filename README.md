@@ -1,144 +1,147 @@
+<!--
+Copyright 2026 Aniket Kulkarni
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # NeuralPlus
 
 [![C++17](https://img.shields.io/badge/C%2B%2B-17%2B-blue.svg)](https://isocpp.org/)
 [![CI](https://github.com/anikulkarni/NeuralPlus/actions/workflows/ci.yml/badge.svg)](https://github.com/anikulkarni/NeuralPlus/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
-**NeuralPlus is a modular C++17 foundation for building model clients, tool-using agents, tracing and replay pipelines, MCP integrations, and RAG systems.**
+NeuralPlus is a small C++17 SDK for provider-independent AI conversations,
+tool use, session state, and tracing.
 
-> **Project status:** early development / pre-alpha. The architecture and core tool loop are available; production model-provider adapters are the first active milestone.
+> **Status:** pre-alpha. Version 0.2 is a deliberately breaking simplification
+> of the original bootstrap API.
 
-## Why NeuralPlus?
+## The design in five pieces
 
-Most GenAI application frameworks are Python-first. NeuralPlus aims to provide a modern C++ alternative for teams that need predictable performance, native integration, explicit ownership, and extensible abstractions without hiding the execution model.
+- `AIClient` owns the complete conversation/tool loop.
+- `OpenAIClient`, `AnthropicClient`, `GeminiClient`, and
+  `OpenAICompatibleClient` translate one provider round.
+- `Session` owns conversation messages plus a thread-safe, process-local cache.
+- `Tool` is the formal executable extension point; `FunctionTool` covers most
+  applications without a new subclass.
+- Any number of `Tracer` objects can be attached to a client. Built-ins cover
+  console, JSON Lines files, memory, callbacks, and POSIX syslog.
 
-The project is designed around a few principles:
+A model name is data (`ModelDescriptor::id`), not a new C++ type. This keeps
+the class tree stable when providers add models.
 
-- **Models are objects:** provider clients implement a common `Model` interface and can be wrapped or composed through decorators.
-- **Tools are classes:** tools can hold behavior, use session state, and be extended through inheritance.
-- **Parallel tool execution:** multiple model-requested tools can run concurrently while preserving result ordering.
-- **Pluggable infrastructure:** tracing, replay, metrics, transports, providers, and retrieval components use replaceable interfaces.
-- **Readable modern C++:** templates are used where they improve type safety without turning the codebase into template metaprogramming puzzles.
-- **Portable builds:** CMake-based C++17 support targeting Linux, macOS, and Windows.
+## Build
 
-## Current capabilities
-
-The initial core includes:
-
-- Extensible `Model` and `ModelDecorator` abstractions
-- Extensible `Tool` and `TypedTool<Input, Output>` abstractions
-- Thread-safe, session-scoped `StateStore`
-- Tool registry and JSON-schema metadata
-- Stateful multi-round model/tool orchestration
-- Parallel tool execution using standard C++ futures
-- Lifecycle observer hooks for future tracing and metrics adapters
-- CMake install/export support
-- Cross-platform CI definition
-- A dependency-free example and core tests
-
-## Quick start
-
-### Build
+Prerequisites are CMake 3.20+, a C++17 compiler, libcurl development files, and
+Threads. CMake first looks for nlohmann/json 3.12.0 and otherwise downloads its
+checksum-pinned release archive.
 
 ```bash
-cmake -S . -B build -DNEURALPLUS_BUILD_TESTS=ON
-cmake --build build --config Release
-ctest --test-dir build --output-on-failure -C Release
+cmake --preset dev
+cmake --build --preset dev
+ctest --preset dev
 ```
 
-### Run the example
+The equivalent generator-independent commands are documented in
+[Getting started](docs/GETTING_STARTED.md).
 
-```bash
-./build/neuralplus_stateful_tools
-```
+## Smallest provider example
 
-On multi-config generators such as Visual Studio, the binary is usually under `build/Release/`.
-
-## Minimal usage
+The factory returns the common `AIClient` interface. The OpenAI configuration
+reads `OPENAI_API_KEY` when `config.api_key` is not set:
 
 ```cpp
 #include <neuralplus/neuralplus.hpp>
 
-class MyTool final : public neuralplus::Tool {
-public:
-    std::string name() const override { return "my_tool"; }
-    std::string description() const override { return "Does useful work."; }
+#include <iostream>
+#include <utility>
 
-    std::string invoke(neuralplus::ToolContext& context,
-                       std::string_view arguments_json) override {
-        const int calls = context.state->update<int>(
-            "my_tool.calls", 0, [](int value) { return value + 1; });
-        return "{\"calls\":" + std::to_string(calls) + "}";
-    }
+int main() {
+    neuralplus::OpenAIConfig config{"your-model-id"};
+    auto client = neuralplus::make_client(std::move(config));
+    neuralplus::Session session;
+
+    const auto response =
+        client->generate(session, "Explain RAII in one sentence.");
+    std::cout << response.message.text() << '\n';
+}
+```
+
+Change only the typed configuration passed to `make_client` to select another
+provider. The same `Session`, tools, and tracers work with every built-in
+provider.
+Credentials can also be assigned directly to the provider configuration; see
+[Credentials](docs/GETTING_STARTED.md#credentials).
+
+## Add a stateful tool and tracers
+
+```cpp
+neuralplus::ToolSpec spec;
+spec.name = "increment";
+spec.description = "Increment this session's counter.";
+spec.input_schema = {
+    {"type", "object"},
+    {"properties", {{"delta", {{"type", "integer"}}}}},
+    {"required", {"delta"}},
+};
+
+auto tool = std::make_shared<neuralplus::FunctionTool>(
+    std::move(spec),
+    [](neuralplus::ToolContext& context,
+       const neuralplus::JsonValue& arguments) {
+        const int delta = arguments.at("delta").get<int>();
+        const int value = context.state().update<int>(
+            "counter", 0, [delta](int current) { return current + delta; });
+        return neuralplus::ToolOutput::json({{"counter", value}});
+    });
+
+neuralplus::ClientOptions options;
+options.tools = {tool};
+options.tracers = {
+    std::make_shared<neuralplus::ConsoleTracer>(),
+    std::make_shared<neuralplus::FileTracer>("trace.jsonl"),
 };
 ```
 
-See [`examples/stateful_parallel_tools.cpp`](examples/stateful_parallel_tools.cpp) for a complete model/tool loop.
+Trace output is metadata-only by default. `capture_trace_payloads` makes
+payloads available to in-memory, callback, and custom tracers. `FileTracer`
+also requires `FileTracerOptions::include_payloads`; console and syslog output
+remain metadata-only. New trace files are created with mode `0600` on POSIX.
+Provider rounds, total tool calls, concurrent tool callbacks, and HTTP response
+sizes all have configurable bounds. Tool declarations are validated and
+snapshotted when the client is constructed.
 
-## Architecture at a glance
-
-```mermaid
-flowchart LR
-    App[Application] --> Agent
-    Agent --> Model[Model interface]
-    Model --> Provider[OpenAI / Gemini / Anthropic adapters]
-    Agent --> Registry[Tool registry]
-    Registry --> Tools[Stateful Tool classes]
-    Tools --> State[Session StateStore]
-    Agent --> Observer[Observer interfaces]
-    Observer --> Trace[Tracing / Replay]
-    Observer --> OTel[OpenTelemetry]
-    Agent --> MCP[MCP client tools]
-    Agent --> RAG[RAG and query optimization]
-```
-
-The core intentionally does not depend on a specific HTTP or JSON library yet. Provider adapters will own wire-format conversion behind stable model/tool interfaces.
-
-## Roadmap
-
-Development is planned incrementally:
-
-1. **Provider clients:** OpenAI, Gemini, and Anthropic, including tool calling
-2. **Tracing and replay:** pluggable file and SQLite implementations
-3. **Instrumentation:** OpenTelemetry-compatible traces and metrics
-4. **MCP client:** discovery and invocation of MCP tools
-5. **Provider expansion:** more model classes, routing, fallback, streaming, and composition
-6. **RAG:** retrieval interfaces, hybrid search, reranking, and query optimization
-
-See the detailed [`ROADMAP.md`](docs/ROADMAP.md).
-
-## Supported environments
-
-| Area | Initial target |
-|---|---|
-| Language | C++17 and newer |
-| Build | CMake 3.20+ |
-| Linux | Ubuntu and enterprise Linux-compatible distributions |
-| macOS | Apple Clang on current supported macOS releases |
-| Windows | Visual Studio 2022 / modern MSVC; best-effort until provider CI matures |
+The complete credential-free example uses `FunctionAIClient`:
+[examples/simple_session.cpp](examples/simple_session.cpp).
 
 ## Documentation
 
 - [Getting started](docs/GETTING_STARTED.md)
-- [Architecture](docs/ARCHITECTURE.md)
-- [Extension guide](docs/EXTENDING.md)
+- [Architecture and class diagram](docs/ARCHITECTURE.md)
+- [Extending clients, tools, and tracing](docs/EXTENDING.md)
 - [Roadmap](docs/ROADMAP.md)
 - [Contributing](CONTRIBUTING.md)
+- [Contributors](CONTRIBUTORS.md)
+- [Code of Conduct](CODE_OF_CONDUCT.md)
 - [Security policy](SECURITY.md)
 
-## Scope and maturity
+Generate API documentation with:
 
-NeuralPlus is not yet a replacement for mature production SDKs. Until the project reaches a stable release:
+```bash
+cmake --preset docs
+cmake --build --preset docs
+```
 
-- APIs may change between minor versions.
-- Provider behavior is not available until the corresponding roadmap milestone lands.
-- Security-sensitive usage should be independently reviewed.
-- The project makes no claim of provider certification or endorsement.
+## Supported environments
 
-## Contributing
-
-Design discussions, provider adapters, portability fixes, tests, and documentation improvements are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.
+The library targets C++17 on Linux, macOS, and Windows. Pull-request CI covers
+Ubuntu 22.04/24.04, macOS 14, Windows Server 2022, and Rocky Linux 9. Scheduled
+compatibility jobs cover Debian 12, Red Hat UBI 9, Oracle Linux 9, and CentOS
+Stream 9. UBI is a compatibility signal for RHEL 9, not Red Hat certification.
+See [Getting started](docs/GETTING_STARTED.md#platform-support) for the support
+tiers and compiler details.
 
 ## License
 
-NeuralPlus is licensed under the [MIT License](LICENSE).
+NeuralPlus is licensed under the [Apache License 2.0](LICENSE). Dependency
+attributions and licenses are recorded in
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

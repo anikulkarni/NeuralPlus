@@ -1,8 +1,15 @@
+// Copyright 2026 Aniket Kulkarni
+// SPDX-License-Identifier: Apache-2.0
+
+/// @file
+/// Convenience header that exposes the complete public NeuralPlus API.
+
 #pragma once
 
-#include "neuralplus/core/agent.hpp"
-#include "neuralplus/core/model.hpp"
-#include "neuralplus/core/observer.hpp"
-#include "neuralplus/core/state_store.hpp"
-#include "neuralplus/core/tool.hpp"
-#include "neuralplus/core/types.hpp"
+#include "neuralplus/client.hpp"
+#include "neuralplus/providers.hpp"
+#include "neuralplus/session.hpp"
+#include "neuralplus/tool.hpp"
+#include "neuralplus/tracing.hpp"
+#include "neuralplus/transport.hpp"
+#include "neuralplus/types.hpp"

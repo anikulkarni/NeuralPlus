@@ -1,5 +1,9 @@
+# Copyright 2026 Aniket Kulkarni
+# SPDX-License-Identifier: Apache-2.0
+
 # Build outputs
 build/
+build-*/
 cmake-build-*/
 out/
 install/
@@ -49,3 +53,4 @@ compile_commands.json
 *.sqlite3
 *.jsonl
 traces/
+docs/api/
