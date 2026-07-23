@@ -560,6 +560,16 @@ void append_gemini_history(JsonValue& contents, const Message& message) {
                 request_id);
         }
 
+        // Gemini can return a visible answer and a separate thought summary:
+        // {"text":"Reasoning summary","thought":true}
+        // {"text":"Final answer"}
+        // Keep the first Part provider-native so Message::text() exposes only
+        // the final answer while the exact Part remains available and replayable.
+        if (text != part.end() && thought != part.end() &&
+            thought->get<bool>()) {
+            contents.push_back(Content::extension("gemini", part));
+            continue;
+        }
         if (text != part.end()) {
             contents.push_back(Content::text(text->get<std::string>()));
             continue;
