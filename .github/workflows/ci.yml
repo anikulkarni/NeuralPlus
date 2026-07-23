@@ -1,37 +1,246 @@
+# Copyright 2026 Aniket Kulkarni
+# SPDX-License-Identifier: Apache-2.0
+
 name: CI
 
 on:
   push:
     branches: [main]
   pull_request:
+  schedule:
+    - cron: "17 9 * * 1"
+  workflow_dispatch:
 
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  build:
-    name: ${{ matrix.os }} / ${{ matrix.build_type }}
+  unix:
+    name: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        build_type: [Debug, Release]
+        include:
+          - name: Ubuntu 22.04 / GCC / Debug
+            os: ubuntu-22.04
+            cc: gcc
+            cxx: g++
+            build_type: Debug
+            shared: "OFF"
+          - name: Ubuntu 24.04 / Clang / Release
+            os: ubuntu-24.04
+            cc: clang
+            cxx: clang++
+            build_type: Release
+            shared: "ON"
+          - name: macOS 14 / AppleClang / Release
+            os: macos-14
+            cc: clang
+            cxx: clang++
+            build_type: Release
+            shared: "OFF"
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Check out source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Install Linux dependencies
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install --yes ninja-build libcurl4-openssl-dev
+
+      - name: Install macOS dependencies
+        if: runner.os == 'macOS'
+        run: brew install ninja nlohmann-json
+
+      - name: Show toolchain versions
+        run: cmake --version && ${{ matrix.cxx }} --version
 
       - name: Configure
+        env:
+          CC: ${{ matrix.cc }}
+          CXX: ${{ matrix.cxx }}
         run: >-
-          cmake -S . -B build
+          cmake -S . -B build -G Ninja
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          -DBUILD_SHARED_LIBS=${{ matrix.shared }}
           -DNEURALPLUS_BUILD_TESTS=ON
           -DNEURALPLUS_BUILD_EXAMPLES=ON
           -DNEURALPLUS_WARNINGS_AS_ERRORS=ON
 
       - name: Build
-        run: cmake --build build --config ${{ matrix.build_type }} --parallel
+        run: cmake --build build --parallel
 
-      - name: Test
-        run: ctest --test-dir build --build-config ${{ matrix.build_type }} --output-on-failure
+      - name: Test without provider secrets
+        run: ctest --test-dir build --output-on-failure
+
+      - name: Verify installed package from a consumer
+        if: matrix.os == 'ubuntu-24.04'
+        run: |
+          cmake --install build --prefix "$RUNNER_TEMP/neuralplus-install"
+          cmake \
+            -S tests/package_consumer \
+            -B "$RUNNER_TEMP/neuralplus-consumer" \
+            -G Ninja \
+            -DCMAKE_PREFIX_PATH="$RUNNER_TEMP/neuralplus-install"
+          cmake --build "$RUNNER_TEMP/neuralplus-consumer"
+          LD_LIBRARY_PATH="$RUNNER_TEMP/neuralplus-install/lib" \
+            "$RUNNER_TEMP/neuralplus-consumer/neuralplus_package_consumer"
+
+  windows:
+    name: Windows Server 2022 / MSVC / Release
+    runs-on: windows-2022
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Install dependencies
+        run: vcpkg install curl:x64-windows nlohmann-json:x64-windows
+
+      - name: Show CMake version
+        run: cmake --version
+
+      - name: Configure
+        run: >-
+          cmake -S . -B build -A x64
+          "-DCMAKE_TOOLCHAIN_FILE=$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake"
+          -DBUILD_SHARED_LIBS=ON
+          -DNEURALPLUS_BUILD_TESTS=ON
+          -DNEURALPLUS_BUILD_EXAMPLES=ON
+          -DNEURALPLUS_WARNINGS_AS_ERRORS=ON
+
+      - name: Build
+        run: cmake --build build --config Release --parallel
+
+      - name: Test without provider secrets
+        run: ctest --test-dir build --build-config Release --output-on-failure
+
+      - name: Verify installed shared package from a consumer
+        run: |
+          $prefix = Join-Path $env:RUNNER_TEMP "neuralplus-install"
+          $consumer = Join-Path $env:RUNNER_TEMP "neuralplus-consumer"
+          cmake --install build --config Release --prefix $prefix
+          cmake `
+            -S tests/package_consumer `
+            -B $consumer `
+            -A x64 `
+            "-DCMAKE_TOOLCHAIN_FILE=$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" `
+            "-DCMAKE_PREFIX_PATH=$prefix"
+          cmake --build $consumer --config Release --parallel
+          $env:PATH = "$(Join-Path $prefix 'bin');$env:PATH"
+          & (Join-Path $consumer "Release/neuralplus_package_consumer.exe")
+
+  rocky:
+    name: Rocky Linux 9 / GCC / Release
+    runs-on: ubuntu-24.04
+    container: rockylinux/rockylinux:9
+    timeout-minutes: 30
+
+    steps:
+      - name: Install build dependencies
+        run: dnf install --assumeyes cmake gcc-c++ git libcurl-devel make tar xz
+
+      - name: Check out source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Show toolchain versions
+        run: cmake --version && c++ --version
+
+      - name: Configure
+        run: >-
+          cmake -S . -B build -G "Unix Makefiles"
+          -DCMAKE_BUILD_TYPE=Release
+          -DNEURALPLUS_BUILD_TESTS=ON
+          -DNEURALPLUS_BUILD_EXAMPLES=ON
+          -DNEURALPLUS_WARNINGS_AS_ERRORS=ON
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Test without provider secrets
+        run: ctest --test-dir build --output-on-failure
+
+  enterprise-compatibility:
+    name: ${{ matrix.name }}
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    container: ${{ matrix.image }}
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Debian 12
+            image: debian:12
+            install: apt-get update && apt-get install --yes cmake g++ git libcurl4-openssl-dev make xz-utils
+          - name: Red Hat UBI 9 compatibility
+            image: registry.access.redhat.com/ubi9/ubi:9.6
+            install: dnf install --assumeyes cmake gcc-c++ git libcurl-devel make tar xz
+          - name: Oracle Linux 9
+            image: oraclelinux:9
+            install: dnf install --assumeyes cmake gcc-c++ git libcurl-devel make tar xz
+          - name: CentOS Stream 9
+            image: quay.io/centos/centos:stream9
+            install: dnf install --assumeyes cmake gcc-c++ git libcurl-devel make tar xz
+
+    steps:
+      - name: Install build dependencies
+        run: ${{ matrix.install }}
+
+      - name: Check out source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Show toolchain versions
+        run: cmake --version && c++ --version
+
+      - name: Configure
+        run: >-
+          cmake -S . -B build -G "Unix Makefiles"
+          -DCMAKE_BUILD_TYPE=Release
+          -DNEURALPLUS_BUILD_TESTS=ON
+          -DNEURALPLUS_BUILD_EXAMPLES=OFF
+          -DNEURALPLUS_WARNINGS_AS_ERRORS=ON
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Test without provider secrets
+        run: ctest --test-dir build --output-on-failure
+
+  docs:
+    name: Doxygen
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install --yes doxygen libcurl4-openssl-dev ninja-build
+
+      - name: Show documentation tool versions
+        run: cmake --version && doxygen --version
+
+      - name: Configure documentation
+        run: cmake --preset docs
+
+      - name: Build documentation
+        run: cmake --build --preset docs
