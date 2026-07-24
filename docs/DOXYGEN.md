@@ -11,7 +11,7 @@ documentation warnings as errors and writes one browsable HTML site containing
 the guides, API reference, and syntax-highlighted example source.
 
 The current documentation from `main` is published at
-[anikulkarni.github.io/NeuralPlus](https://anikulkarni.github.io/NeuralPlus/).
+[neuralplus.dev](https://neuralplus.dev/).
 
 ## Install the tools
 
