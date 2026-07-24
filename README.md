@@ -149,12 +149,12 @@ commands.
 
 ## Supported environments
 
-The library targets C++17 on Linux, macOS, and Windows. Pull-request CI covers
-Ubuntu 22.04/24.04, macOS 14, Windows Server 2022, and Rocky Linux 9. Scheduled
-compatibility jobs cover Debian 12, Red Hat UBI 9, Oracle Linux 9, and CentOS
-Stream 9. UBI is a compatibility signal for RHEL 9, not Red Hat certification.
-See [Getting started](docs/GETTING_STARTED.md#platform-support) for the support
-tiers and compiler details.
+The library targets C++17 on Linux, macOS, and Windows. Every CI run covers
+Ubuntu 22.04/24.04, macOS 14, Windows Server 2022, Rocky Linux 9, Debian 12,
+Red Hat UBI 9, Oracle Linux 9, and CentOS Stream 9. UBI is a compatibility
+signal for RHEL 9, not Red Hat certification. See
+[Getting started](docs/GETTING_STARTED.md#platform-support) for compiler and
+platform details.
 
 ## License
 

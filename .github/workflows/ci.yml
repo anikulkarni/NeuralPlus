@@ -175,7 +175,6 @@ jobs:
 
   enterprise-compatibility:
     name: ${{ matrix.name }}
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-24.04
     container: ${{ matrix.image }}
     timeout-minutes: 35

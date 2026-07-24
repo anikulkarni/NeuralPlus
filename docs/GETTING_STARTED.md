@@ -213,8 +213,7 @@ ABI compatibility across arbitrary toolchains.
 
 | Tier | Environments | Validation |
 |---|---|---|
-| Tier 1 | Ubuntu 22.04 and 24.04; Rocky Linux 9; macOS 14; Windows Server 2022 | Built and tested for pull requests |
-| Tier 2 | Debian 12; Red Hat UBI 9; Oracle Linux 9; CentOS Stream 9 | Scheduled compatibility build and tests |
+| Tier 1 | Ubuntu 22.04 and 24.04; Debian 12; Red Hat UBI 9; Rocky Linux 9; Oracle Linux 9; CentOS Stream 9; macOS 14; Windows Server 2022 | Built and tested on every CI run |
 | Best effort | Other current Linux distributions and newer OS/toolchain versions | Community reports and compatible C++17/libcurl installations |
 
 UBI 9 exercises an Enterprise Linux userspace and is a useful RHEL 9
