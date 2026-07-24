@@ -16,7 +16,8 @@ Explain the implementation and important design tradeoffs.
 - [ ] Tests added or updated
 - [ ] Public API documentation builds with the Doxygen target
 - [ ] Builds with C++17
-- [ ] Provider tests use mock transport and no live credentials
+- [ ] Protocol tests use mock transport and no live credentials
+- [ ] Runnable provider examples use real clients and have an offline `--help` smoke path
 - [ ] Logs and fixtures are sanitized of credentials and sensitive content
 - [ ] New source and documentation files have Apache-2.0 SPDX headers
 - [ ] Dependency changes include license and `THIRD_PARTY_NOTICES.md` review

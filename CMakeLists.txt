@@ -90,6 +90,7 @@ endif()
 set(
     NEURALPLUS_SOURCES
     src/client.cpp
+    src/models.cpp
     src/provider_common.cpp
     src/providers/anthropic.cpp
     src/providers/gemini.cpp
@@ -142,10 +143,37 @@ set_target_properties(
         VISIBILITY_INLINES_HIDDEN YES
 )
 
+set(NEURALPLUS_PROVIDER_EXAMPLE_TARGETS)
+
 if(NEURALPLUS_BUILD_EXAMPLES)
+    function(neuralplus_add_example example_name)
+        set(example_target "neuralplus_${example_name}")
+        add_executable(${example_target} "examples/${example_name}.cpp")
+        target_link_libraries(${example_target} PRIVATE NeuralPlus::neuralplus)
+        neuralplus_enable_strict_warnings(${example_target})
+        set(
+            NEURALPLUS_PROVIDER_EXAMPLE_TARGETS
+            ${NEURALPLUS_PROVIDER_EXAMPLE_TARGETS} ${example_target}
+            PARENT_SCOPE
+        )
+    endfunction()
+
     add_executable(neuralplus_simple_session examples/simple_session.cpp)
     target_link_libraries(neuralplus_simple_session PRIVATE NeuralPlus::neuralplus)
     neuralplus_enable_strict_warnings(neuralplus_simple_session)
+
+    neuralplus_add_example(openai_chatbot)
+    neuralplus_add_example(openai_custom_config)
+    neuralplus_add_example(openai_multimodal)
+    neuralplus_add_example(anthropic_chatbot)
+    neuralplus_add_example(anthropic_custom_config)
+    neuralplus_add_example(anthropic_multimodal)
+    neuralplus_add_example(gemini_chatbot)
+    neuralplus_add_example(gemini_custom_config)
+    neuralplus_add_example(gemini_multimodal)
+    neuralplus_add_example(openai_compatible_chatbot)
+    neuralplus_add_example(openai_compatible_custom_config)
+    neuralplus_add_example(openai_compatible_multimodal)
 endif()
 
 if(NEURALPLUS_BUILD_TESTS)
@@ -161,6 +189,24 @@ if(NEURALPLUS_BUILD_TESTS)
     target_link_libraries(neuralplus_provider_tests PRIVATE NeuralPlus::neuralplus)
     neuralplus_enable_strict_warnings(neuralplus_provider_tests)
     add_test(NAME neuralplus_provider_tests COMMAND neuralplus_provider_tests)
+
+    add_executable(neuralplus_model_tests tests/model_tests.cpp)
+    target_link_libraries(neuralplus_model_tests PRIVATE NeuralPlus::neuralplus)
+    neuralplus_enable_strict_warnings(neuralplus_model_tests)
+    add_test(NAME neuralplus_model_tests COMMAND neuralplus_model_tests)
+
+    if(NEURALPLUS_BUILD_EXAMPLES)
+        add_test(
+            NAME neuralplus_simple_session_example
+            COMMAND neuralplus_simple_session
+        )
+        foreach(example_target IN LISTS NEURALPLUS_PROVIDER_EXAMPLE_TARGETS)
+            add_test(
+                NAME "${example_target}_help"
+                COMMAND ${example_target} --help
+            )
+        endforeach()
+    endif()
 endif()
 
 if(NEURALPLUS_BUILD_DOCS)

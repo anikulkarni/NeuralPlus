@@ -48,8 +48,10 @@ cmake --build build --config Release
 ctest --test-dir build --output-on-failure -C Release
 ```
 
-Tests use `MockHttpTransport`; they need no API keys and make no live provider
-requests.
+Provider protocol unit tests use `MockHttpTransport`; they need no API keys and
+make no live provider requests. Runnable examples compile against the real
+clients and production transport. CI invokes their offline `--help` paths; see
+[Provider examples](EXAMPLES.md).
 
 ## Install and consume
 
@@ -105,7 +107,7 @@ config.extra_headers.push_back(
 ## Create a client and session
 
 ```cpp
-neuralplus::OpenAIConfig config{"your-model-id"};
+auto config = neuralplus::models::openai::gpt_5_6_terra();
 
 neuralplus::ClientOptions options;
 options.tracers.push_back(std::make_shared<neuralplus::ConsoleTracer>());
@@ -127,6 +129,9 @@ The overloaded factory is type-safe: pass `AnthropicConfig`, `GeminiConfig`, or
 `OpenAICompatibleConfig` to select another provider without changing the
 calling code. The second call automatically includes the first conversation.
 Use one session per independent conversation.
+
+See [Model configurations](MODELS.md) for ready-to-use choices and the custom
+model pattern.
 
 ## Tool execution limits
 
@@ -197,15 +202,9 @@ remain separately available when a provider reports them.
 
 ## Generate API documentation
 
-Install Doxygen 1.9 or newer, then:
-
-```bash
-cmake --preset docs
-cmake --build --preset docs
-```
-
-The `neuralplus_docs` target checks public documentation and writes HTML under
-the documentation build directory.
+Install Doxygen 1.9 or newer and follow
+[Generate API documentation](DOXYGEN.md). The `neuralplus_docs` target checks
+public documentation and writes `build/docs/api/index.html`.
 
 ## Platform support
 

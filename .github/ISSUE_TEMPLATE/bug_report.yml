@@ -35,6 +35,11 @@ body:
       label: Compiler, CMake, and operating system
     validations:
       required: true
+  - type: input
+    id: provider_model
+    attributes:
+      label: Provider, model ID, and example
+      description: Name the provider, exact model ID, and example program if one was used. Do not include a key.
   - type: textarea
     id: logs
     attributes:

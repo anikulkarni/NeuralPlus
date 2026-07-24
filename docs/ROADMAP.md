@@ -17,6 +17,7 @@ This is direction, not a delivery commitment.
 - [x] Console, file, memory, callback, and POSIX syslog tracers
 - [x] Mockable libcurl transport boundary
 - [x] Secretless provider fixture tests
+- [x] Convenience model configurations and real-provider usage examples
 - [x] CMake install package and Doxygen target
 
 ## Near term
