@@ -9,6 +9,22 @@ The provider examples use the production `OpenAIClient`, `AnthropicClient`,
 `GeminiClient`, or `OpenAICompatibleClient` and the normal libcurl transport.
 They do not replace HTTP with `MockHttpTransport`.
 
+## Browse the complete source
+
+The generated [NeuralPlus documentation site](https://anikulkarni.github.io/NeuralPlus/)
+has an **Examples** section containing syntax-highlighted source generated
+directly from the checked-in files below. The repository remains the single
+source of truth.
+
+| Example | OpenAI | Anthropic | Gemini | OpenAI-compatible |
+|---|---|---|---|---|
+| Chatbot | [source](https://github.com/anikulkarni/NeuralPlus/blob/main/examples/openai_chatbot.cpp) | [source](https://github.com/anikulkarni/NeuralPlus/blob/main/examples/anthropic_chatbot.cpp) | [source](https://github.com/anikulkarni/NeuralPlus/blob/main/examples/gemini_chatbot.cpp) | [source](https://github.com/anikulkarni/NeuralPlus/blob/main/examples/openai_compatible_chatbot.cpp) |
+| Custom model/config | [source](https://github.com/anikulkarni/NeuralPlus/blob/main/examples/openai_custom_config.cpp) | [source](https://github.com/anikulkarni/NeuralPlus/blob/main/examples/anthropic_custom_config.cpp) | [source](https://github.com/anikulkarni/NeuralPlus/blob/main/examples/gemini_custom_config.cpp) | [source](https://github.com/anikulkarni/NeuralPlus/blob/main/examples/openai_compatible_custom_config.cpp) |
+| Multimodal | [source](https://github.com/anikulkarni/NeuralPlus/blob/main/examples/openai_multimodal.cpp) | [source](https://github.com/anikulkarni/NeuralPlus/blob/main/examples/anthropic_multimodal.cpp) | [source](https://github.com/anikulkarni/NeuralPlus/blob/main/examples/gemini_multimodal.cpp) | [source](https://github.com/anikulkarni/NeuralPlus/blob/main/examples/openai_compatible_multimodal.cpp) |
+
+The [credential-free session example](https://github.com/anikulkarni/NeuralPlus/blob/main/examples/simple_session.cpp)
+demonstrates sessions, tools, state, and tracing without contacting a provider.
+
 Build them with:
 
 ```bash
@@ -134,3 +150,7 @@ Protocol behavior is covered separately by deterministic unit tests that
 inject `MockHttpTransport`. Live provider calls are an explicit local
 integration step because public-repository pull requests must not receive
 repository secrets.
+
+The same CI run validates the complete Doxygen site on pull requests. After a
+successful push to `main`, GitHub Pages publishes the validated output,
+including this guide, the API reference, and all example source pages.
