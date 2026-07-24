@@ -103,6 +103,38 @@ bool ascii_iequals(std::string_view left, std::string_view right) {
     return true;
 }
 
+bool is_loopback_http_url(std::string_view url) {
+    constexpr std::string_view prefix{"http://"};
+    if (url.size() < prefix.size() ||
+        !ascii_iequals(url.substr(0, prefix.size()), prefix)) {
+        return false;
+    }
+
+    const std::size_t authority_begin = prefix.size();
+    const std::size_t authority_end =
+        url.find_first_of("/?#", authority_begin);
+    const std::string_view authority =
+        url.substr(authority_begin, authority_end - authority_begin);
+    if (authority.empty() ||
+        authority.find('@') != std::string_view::npos) {
+        return false;
+    }
+
+    std::string_view host;
+    if (authority.front() == '[') {
+        const std::size_t close = authority.find(']');
+        if (close == std::string_view::npos) {
+            return false;
+        }
+        host = authority.substr(1U, close - 1U);
+    } else {
+        host = authority.substr(0, authority.find(':'));
+    }
+    return ascii_iequals(host, "localhost") ||
+           host == "127.0.0.1" ||
+           host == "::1";
+}
+
 std::string trim_ascii(std::string value) {
     const auto is_space = [](unsigned char character) {
         return character == ' ' || character == '\t' ||
@@ -360,6 +392,13 @@ HttpResponse CurlHttpTransport::send(const HttpRequest& request) {
     }
     if (!impl_->options.proxy.empty()) {
         set_option(handle.value, CURLOPT_PROXY, impl_->options.proxy.c_str());
+    }
+    if (is_loopback_http_url(request.url)) {
+        // Provider examples permit cleartext HTTP only for loopback services.
+        // Bypassing every configured proxy keeps credentials and prompts on
+        // the local machine even when HTTP_PROXY/http_proxy is present.
+        // https://curl.se/libcurl/c/CURLOPT_NOPROXY.html
+        set_option(handle.value, CURLOPT_NOPROXY, "*");
     }
 
     const char* method = method_name(request.method);

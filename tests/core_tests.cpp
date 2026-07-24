@@ -7,12 +7,14 @@
 #include <chrono>
 #include <condition_variable>
 #include <cstdio>
+#include <cstdlib>
 #include <exception>
 #include <fstream>
 #include <future>
 #include <iostream>
 #include <memory>
 #include <mutex>
+#include <optional>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -154,6 +156,46 @@ private:
 };
 
 #if !defined(_WIN32)
+std::optional<std::string> environment_value(const std::string& name) {
+    const char* value = std::getenv(name.c_str());
+    return value == nullptr ? std::nullopt
+                            : std::optional<std::string>(value);
+}
+
+void set_environment(const std::string& name,
+                     const std::optional<std::string>& value) {
+    const int result =
+        value.has_value()
+            ? ::setenv(name.c_str(), value->c_str(), 1)
+            : ::unsetenv(name.c_str());
+    if (result != 0) {
+        throw std::runtime_error("could not update test environment");
+    }
+}
+
+class ScopedEnvironment final {
+public:
+    ScopedEnvironment(std::string name, std::string value)
+        : name_(std::move(name)),
+          original_(environment_value(name_)) {
+        set_environment(name_, std::move(value));
+    }
+
+    ~ScopedEnvironment() {
+        try {
+            set_environment(name_, original_);
+        } catch (...) {
+        }
+    }
+
+private:
+    ScopedEnvironment(const ScopedEnvironment&) = delete;
+    ScopedEnvironment& operator=(const ScopedEnvironment&) = delete;
+
+    std::string name_;
+    std::optional<std::string> original_;
+};
+
 class LoopbackHttpServer final {
 public:
     explicit LoopbackHttpServer(std::vector<std::string> responses)
@@ -1381,6 +1423,27 @@ void test_curl_transport_validation() {
         require(response.header("X-NeuralPlus") ==
                     std::optional<std::string>{"ready"},
                 "loopback HTTP response header");
+    }
+
+    {
+        LoopbackHttpServer target({loopback_response("direct")});
+        LoopbackHttpServer proxy({loopback_response("proxied")});
+        ScopedEnvironment http_proxy("http_proxy", proxy.url());
+        ScopedEnvironment no_proxy("NO_PROXY", "");
+        ScopedEnvironment lower_no_proxy("no_proxy", "");
+        CurlHttpTransport loopback_transport;
+        HttpRequest loopback_request;
+        loopback_request.method = HttpMethod::get;
+        loopback_request.url = target.url();
+        loopback_request.timeout = std::chrono::milliseconds{2000};
+        const HttpResponse response =
+            loopback_transport.send(loopback_request);
+        require(response.body == "direct",
+                "loopback HTTP bypasses environment proxy");
+        require(target.completed(),
+                "loopback target handled the direct request");
+        require(!proxy.completed(),
+                "environment proxy did not receive the loopback request");
     }
 
     {

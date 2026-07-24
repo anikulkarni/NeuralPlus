@@ -13,13 +13,14 @@ int main() {
     ClientOptions options;
     options.transport = std::move(transport);
 
-    OpenAIConfig config{"package-consumer-model"};
+    OpenAIConfig config = models::openai::gpt_5_6_terra();
     config.api_key = "non-secret-test-key";
     auto client = make_client(std::move(config), options);
 
     Session session;
     return session.messages().empty() &&
-                   client->model().provider == Provider::openai
+                   client->model().provider == Provider::openai &&
+                   client->model().id == "gpt-5.6-terra"
                ? 0
                : 1;
 }

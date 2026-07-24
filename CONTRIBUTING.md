@@ -30,14 +30,19 @@ headers must be self-contained and remain C++17-compatible.
 - Keep one orchestration path in `AIClient`; providers translate one round.
 - Prefer `FunctionTool` and `FunctionTracer` before adding subclasses.
 - Keep model names and capabilities in data, not new model-name classes.
+- Keep convenience model configurations small, sourced from official provider
+  documentation, and overrideable as ordinary provider configs.
 - Use clear ownership and small runtime interfaces.
 - Use ordinary templates only where they provide direct type safety; avoid
   template-metaprogramming machinery.
 - Preserve session and tool concurrency invariants.
 - Never expose credentials or unredacted model/tool content in errors, traces,
   tests, or fixtures.
-- Add deterministic tests using `MockHttpTransport`; default tests must not
-  require API keys or live provider calls.
+- Add deterministic protocol tests using `MockHttpTransport`; default tests
+  must not require API keys or live provider calls.
+- Runnable provider examples must instantiate the real client and production
+  transport. Give each a `--help` path that exits before credential resolution
+  so CI can smoke-test it safely.
 - Document public behavior and portability impact.
 
 ## Pull requests

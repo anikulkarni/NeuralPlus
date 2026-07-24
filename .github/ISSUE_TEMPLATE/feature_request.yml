@@ -31,6 +31,8 @@ body:
       options:
         - Client or session runtime
         - Provider client
+        - Model configuration or preset
+        - Examples
         - Tool
         - Tracing or logging
         - OpenTelemetry

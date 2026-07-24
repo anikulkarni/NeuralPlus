@@ -10,6 +10,10 @@ pre-alpha development, minor versions may contain breaking changes.
 
 ## Unreleased
 
+- Ready-to-use model configurations for current OpenAI, Anthropic, and Gemini
+  models, while retaining arbitrary model IDs.
+- Real-provider chatbot, custom-model, and multimodal examples with secretless
+  CI smoke tests.
 - Bounded provider rounds, tool-call totals, parallel callbacks, response
   bodies, and response headers.
 - Immutable validated tool-declaration snapshots, provider-specific tool
