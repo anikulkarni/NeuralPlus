@@ -230,6 +230,10 @@ if(NEURALPLUS_BUILD_DOCS)
     set(DOXYGEN_EXTRACT_ALL NO)
     set(DOXYGEN_GENERATE_LATEX NO)
     set(DOXYGEN_GENERATE_TREEVIEW YES)
+    set(
+        DOXYGEN_HTML_EXTRA_FILES
+        "${CMAKE_CURRENT_SOURCE_DIR}/docs/assets/neuralplus-social-preview.png"
+    )
     set(DOXYGEN_HTML_OUTPUT api)
     set(DOXYGEN_PROJECT_BRIEF "${PROJECT_DESCRIPTION}")
     set(DOXYGEN_QUIET YES)
@@ -240,7 +244,7 @@ if(NEURALPLUS_BUILD_DOCS)
     set(DOXYGEN_WARN_IF_UNDOCUMENTED YES)
     set(DOXYGEN_WARN_AS_ERROR FAIL_ON_WARNINGS)
     doxygen_add_docs(
-        neuralplus_docs
+        neuralplus_doxygen
         include
         README.md
         docs
@@ -252,6 +256,17 @@ if(NEURALPLUS_BUILD_DOCS)
         THIRD_PARTY_NOTICES.md
         WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
         COMMENT "Generating NeuralPlus API documentation"
+    )
+    add_custom_target(
+        neuralplus_docs
+        COMMAND
+            "${CMAKE_COMMAND}"
+            "-DHTML_FILE=${CMAKE_CURRENT_BINARY_DIR}/api/index.html"
+            -P
+            "${CMAKE_CURRENT_SOURCE_DIR}/cmake/InjectDocsSocialMetadata.cmake"
+        DEPENDS neuralplus_doxygen
+        COMMENT "Adding NeuralPlus social preview metadata"
+        VERBATIM
     )
 endif()
 

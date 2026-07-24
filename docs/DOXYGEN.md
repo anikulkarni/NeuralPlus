@@ -48,6 +48,11 @@ The main page is:
 build/docs/api/index.html
 ```
 
+The page includes a direct GitHub repository link and social-preview metadata
+for `neuralplus.dev`. Doxygen copies
+`docs/assets/neuralplus-social-preview.png` into the published site, and CMake
+injects the Open Graph and Twitter card tags after generating the main page.
+
 Open `build/docs/api/examples.html` to browse the generated source examples.
 
 After changing a public header or Markdown file, rerun the build command. For
