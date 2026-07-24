@@ -32,6 +32,8 @@ set(metadata [=[
 <meta property="og:description" content="A provider-independent C++17 SDK for AI conversations, tool use, session state, and tracing."/>
 <meta property="og:url" content="https://neuralplus.dev/"/>
 <meta property="og:image" content="https://neuralplus.dev/neuralplus-social-preview.png"/>
+<meta property="og:image:secure_url" content="https://neuralplus.dev/neuralplus-social-preview.png"/>
+<meta property="og:image:type" content="image/png"/>
 <meta property="og:image:width" content="1200"/>
 <meta property="og:image:height" content="630"/>
 <meta property="og:image:alt" content="NeuralPlus — The composable AI systems toolkit for C++."/>
@@ -39,6 +41,7 @@ set(metadata [=[
 <meta name="twitter:title" content="NeuralPlus — The composable AI systems toolkit for C++."/>
 <meta name="twitter:description" content="A provider-independent C++17 SDK for AI conversations, tool use, session state, and tracing."/>
 <meta name="twitter:image" content="https://neuralplus.dev/neuralplus-social-preview.png"/>
+<meta name="twitter:image:alt" content="NeuralPlus — The composable AI systems toolkit for C++."/>
 ]=])
 
 string(FIND "${html}" "</head>" head_end)
