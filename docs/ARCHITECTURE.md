@@ -103,6 +103,13 @@ One client can serve different sessions concurrently. Built-in adapters are
 safe for this use, while a custom subclass must make `generate_once`
 thread-safe.
 
+`neuralplus/models.hpp` is a convenience catalog layered on this design. Each
+function returns an ordinary typed provider configuration populated with a
+documented model ID, limits, and capabilities. It does not introduce another
+runtime interface, perform routing, or prevent applications from constructing
+a configuration for a new, preview, pinned, or fine-tuned model. See
+[Model configurations](MODELS.md).
+
 Model-specific variation is data-driven:
 
 - stable normalized options such as `temperature` and `max_output_tokens` use

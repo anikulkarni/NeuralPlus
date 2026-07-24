@@ -7,6 +7,7 @@
 #pragma once
 
 #include "neuralplus/client.hpp"
+#include "neuralplus/models.hpp"
 #include "neuralplus/providers.hpp"
 #include "neuralplus/session.hpp"
 #include "neuralplus/tool.hpp"

@@ -27,7 +27,9 @@ tool use, session state, and tracing.
   console, JSON Lines files, memory, callbacks, and POSIX syslog.
 
 A model name is data (`ModelDescriptor::id`), not a new C++ type. This keeps
-the class tree stable when providers add models.
+the class tree stable when providers add models. Typed configurations for
+common current models provide readable defaults without restricting custom
+model IDs.
 
 ## Build
 
@@ -56,7 +58,7 @@ reads `OPENAI_API_KEY` when `config.api_key` is not set:
 #include <utility>
 
 int main() {
-    neuralplus::OpenAIConfig config{"your-model-id"};
+    auto config = neuralplus::models::openai::gpt_5_6_terra();
     auto client = neuralplus::make_client(std::move(config));
     neuralplus::Session session;
 
@@ -71,6 +73,10 @@ provider. The same `Session`, tools, and tracers work with every built-in
 provider.
 Credentials can also be assigned directly to the provider configuration; see
 [Credentials](docs/GETTING_STARTED.md#credentials).
+
+The catalog includes current OpenAI, Anthropic, and Gemini configurations:
+[Model configurations](docs/MODELS.md). An arbitrary provider model remains
+one typed configuration constructor away.
 
 ## Add a stateful tool and tracers
 
@@ -112,11 +118,17 @@ snapshotted when the client is constructed.
 
 The complete credential-free example uses `FunctionAIClient`:
 [examples/simple_session.cpp](examples/simple_session.cpp).
+Ready-to-run chatbots, custom-model programs, and multimodal examples use the
+real built-in provider clients:
+[Provider examples](docs/EXAMPLES.md).
 
 ## Documentation
 
 - [Getting started](docs/GETTING_STARTED.md)
 - [Architecture and class diagram](docs/ARCHITECTURE.md)
+- [Model configurations](docs/MODELS.md)
+- [Provider examples](docs/EXAMPLES.md)
+- [Generating Doxygen documentation](docs/DOXYGEN.md)
 - [Extending clients, tools, and tracing](docs/EXTENDING.md)
 - [Roadmap](docs/ROADMAP.md)
 - [Contributing](CONTRIBUTING.md)
@@ -130,6 +142,10 @@ Generate API documentation with:
 cmake --preset docs
 cmake --build --preset docs
 ```
+
+The generated entry page is `build/docs/api/index.html`; see the
+[Doxygen guide](docs/DOXYGEN.md) for installation, refresh, and non-preset
+commands.
 
 ## Supported environments
 
