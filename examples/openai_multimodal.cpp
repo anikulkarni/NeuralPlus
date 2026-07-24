@@ -42,6 +42,8 @@ int main(int argc, const char* const* argv) {
                 ? OpenAIConfig(arguments.require("--model"))
                 : models::openai::gpt_5_6_terra();
         config.model.capabilities = ModelCapabilities{};
+        config.model.capabilities.text_input = true;
+        config.model.capabilities.text_output = true;
         config.model.capabilities.image_input =
             arguments.has("--image");
         config.model.capabilities.file_input =

@@ -38,6 +38,8 @@ int main(int argc, const char* const* argv) {
                 : models::gemini::gemini_3_6_flash();
         if (arguments.has("--model")) {
             config.model.capabilities = ModelCapabilities{};
+            config.model.capabilities.text_input = true;
+            config.model.capabilities.text_output = true;
         }
         apply_api_key(arguments, config.api_key);
 

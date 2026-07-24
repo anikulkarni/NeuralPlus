@@ -42,6 +42,8 @@ int main(int argc, const char* const* argv) {
                 ? AnthropicConfig(arguments.require("--model"))
                 : models::anthropic::claude_sonnet_5();
         config.model.capabilities = ModelCapabilities{};
+        config.model.capabilities.text_input = true;
+        config.model.capabilities.text_output = true;
         config.model.capabilities.image_input =
             arguments.has("--image");
         config.model.capabilities.file_input =

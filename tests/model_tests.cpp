@@ -38,6 +38,13 @@ void require_common(const ModelDescriptor& model,
 }
 
 void test_openai_models() {
+    ModelCapabilities text_only;
+    text_only = ModelCapabilities{};
+    require(text_only.text_input,
+            "reset model capabilities preserve text input");
+    require(text_only.text_output,
+            "reset model capabilities preserve text output");
+
     const OpenAIConfig sol = models::openai::gpt_5_6_sol();
     require_common(sol.model,
                    Provider::openai,
