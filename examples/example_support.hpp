@@ -9,10 +9,12 @@
 #include <cctype>
 #include <cstdint>
 #include <fstream>
+#include <initializer_list>
 #include <iostream>
 #include <optional>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -21,7 +23,10 @@ namespace neuralplus_examples {
 
 class Arguments final {
 public:
-    Arguments(int argc, const char* const* argv) {
+    Arguments(
+        int argc,
+        const char* const* argv,
+        std::initializer_list<std::string_view> allowed_options) {
         for (int index = 1; index < argc; ++index) {
             const std::string name = argv[index];
             if (name == "--help" || name == "-h") {
@@ -31,6 +36,16 @@ public:
             if (name.compare(0, 2, "--") != 0) {
                 throw std::invalid_argument(
                     "unexpected positional argument: " + name);
+            }
+            const bool known = std::any_of(
+                allowed_options.begin(),
+                allowed_options.end(),
+                [&name](std::string_view option) {
+                    return option == std::string_view(name);
+                });
+            if (!known) {
+                throw std::invalid_argument(
+                    "unknown argument: " + name);
             }
             if (index + 1 >= argc) {
                 throw std::invalid_argument(

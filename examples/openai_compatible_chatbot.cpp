@@ -28,7 +28,15 @@ void usage() {
 
 int main(int argc, const char* const* argv) {
     try {
-        const Arguments arguments(argc, argv);
+        const Arguments arguments(
+            argc,
+            argv,
+            {"--base-url",
+             "--model",
+             "--api-key",
+             "--api-key-env",
+             "--system",
+             "--prompt"});
         if (arguments.help()) {
             usage();
             return 0;

@@ -27,7 +27,10 @@ void usage() {
 
 int main(int argc, const char* const* argv) {
     try {
-        const Arguments arguments(argc, argv);
+        const Arguments arguments(
+            argc,
+            argv,
+            {"--image", "--file", "--api-key", "--model", "--prompt"});
         if (arguments.help()) {
             usage();
             return 0;

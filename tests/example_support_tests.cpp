@@ -44,11 +44,41 @@ void test_secure_base_urls() {
     require_rejected("not-a-url");
 }
 
+void test_arguments() {
+    const char* valid[] = {
+        "example", "--prompt", "hello", "--help"};
+    const Arguments accepted(
+        4, valid, {"--prompt", "--model"});
+    require(accepted.help(), "--help is recognized");
+    require(accepted.require("--prompt") == "hello",
+            "allowed option is stored");
+
+    const char* typo[] = {"example", "--promt", "hello"};
+    bool typo_rejected = false;
+    try {
+        (void)Arguments(3, typo, {"--prompt"});
+    } catch (const std::invalid_argument&) {
+        typo_rejected = true;
+    }
+    require(typo_rejected, "unknown option is rejected");
+
+    const char* duplicate[] = {
+        "example", "--prompt", "one", "--prompt", "two"};
+    bool duplicate_rejected = false;
+    try {
+        (void)Arguments(5, duplicate, {"--prompt"});
+    } catch (const std::invalid_argument&) {
+        duplicate_rejected = true;
+    }
+    require(duplicate_rejected, "duplicate option is rejected");
+}
+
 }  // namespace
 
 int main() {
     try {
         test_secure_base_urls();
+        test_arguments();
         std::cout << "example support tests passed\n";
         return EXIT_SUCCESS;
     } catch (const std::exception& error) {
