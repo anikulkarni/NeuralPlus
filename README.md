@@ -9,7 +9,7 @@ SPDX-License-Identifier: Apache-2.0
 [![GitHub repository](https://img.shields.io/badge/GitHub-View%20repository-181717?logo=github)](https://github.com/anikulkarni/NeuralPlus)
 [![CI](https://github.com/anikulkarni/NeuralPlus/actions/workflows/ci.yml/badge.svg)](https://github.com/anikulkarni/NeuralPlus/actions/workflows/ci.yml)
 [![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages-blue.svg)](https://neuralplus.dev/)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/anikulkarni/NeuralPlus/blob/main/LICENSE)
 
 <p align="center">
   <img src="docs/assets/neuralplus-social-preview.png"
@@ -240,6 +240,8 @@ for compiler and platform details.
 
 ## License
 
-NeuralPlus is licensed under the [Apache License 2.0](LICENSE). Dependency
+NeuralPlus is licensed under the
+[Apache License 2.0](https://github.com/anikulkarni/NeuralPlus/blob/main/LICENSE).
+Dependency
 attributions and licenses are recorded in
 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
