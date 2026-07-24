@@ -51,8 +51,24 @@
       "configurePreset": "dev"
     },
     {
+      "name": "dev-examples",
+      "displayName": "Developer examples",
+      "configurePreset": "dev",
+      "targets": [
+        "neuralplus_examples"
+      ]
+    },
+    {
       "name": "release",
       "configurePreset": "release"
+    },
+    {
+      "name": "release-examples",
+      "displayName": "Release examples",
+      "configurePreset": "release",
+      "targets": [
+        "neuralplus_examples"
+      ]
     },
     {
       "name": "docs",

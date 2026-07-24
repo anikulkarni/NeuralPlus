@@ -143,14 +143,31 @@ set_target_properties(
         VISIBILITY_INLINES_HIDDEN YES
 )
 
+set(NEURALPLUS_EXAMPLE_TARGETS)
 set(NEURALPLUS_PROVIDER_EXAMPLE_TARGETS)
 
 if(NEURALPLUS_BUILD_EXAMPLES)
+    set(
+        NEURALPLUS_EXAMPLE_OUTPUT_DIRECTORY
+        "${CMAKE_CURRENT_BINARY_DIR}/examples"
+    )
+
     function(neuralplus_add_example example_name)
         set(example_target "neuralplus_${example_name}")
         add_executable(${example_target} "examples/${example_name}.cpp")
         target_link_libraries(${example_target} PRIVATE NeuralPlus::neuralplus)
         neuralplus_enable_strict_warnings(${example_target})
+        set_target_properties(
+            ${example_target}
+            PROPERTIES
+                RUNTIME_OUTPUT_DIRECTORY
+                    "${NEURALPLUS_EXAMPLE_OUTPUT_DIRECTORY}"
+        )
+        set(
+            NEURALPLUS_EXAMPLE_TARGETS
+            ${NEURALPLUS_EXAMPLE_TARGETS} ${example_target}
+            PARENT_SCOPE
+        )
         set(
             NEURALPLUS_PROVIDER_EXAMPLE_TARGETS
             ${NEURALPLUS_PROVIDER_EXAMPLE_TARGETS} ${example_target}
@@ -161,6 +178,12 @@ if(NEURALPLUS_BUILD_EXAMPLES)
     add_executable(neuralplus_simple_session examples/simple_session.cpp)
     target_link_libraries(neuralplus_simple_session PRIVATE NeuralPlus::neuralplus)
     neuralplus_enable_strict_warnings(neuralplus_simple_session)
+    set_target_properties(
+        neuralplus_simple_session
+        PROPERTIES
+            RUNTIME_OUTPUT_DIRECTORY "${NEURALPLUS_EXAMPLE_OUTPUT_DIRECTORY}"
+    )
+    list(APPEND NEURALPLUS_EXAMPLE_TARGETS neuralplus_simple_session)
 
     neuralplus_add_example(openai_chatbot)
     neuralplus_add_example(openai_custom_config)
@@ -174,6 +197,12 @@ if(NEURALPLUS_BUILD_EXAMPLES)
     neuralplus_add_example(openai_compatible_chatbot)
     neuralplus_add_example(openai_compatible_custom_config)
     neuralplus_add_example(openai_compatible_multimodal)
+
+    add_custom_target(
+        neuralplus_examples
+        DEPENDS ${NEURALPLUS_EXAMPLE_TARGETS}
+        COMMENT "Building all NeuralPlus examples"
+    )
 endif()
 
 if(NEURALPLUS_BUILD_TESTS)

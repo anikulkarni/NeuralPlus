@@ -22,6 +22,10 @@ cmake --build --preset dev
 ctest --preset dev
 ```
 
+The `dev` preset builds all examples as part of the normal build. To build only
+the examples, run `cmake --build --preset dev-examples`; the executables are
+written to `build/dev/examples/`.
+
 Use the repository `.clang-format` configuration for C++ changes. Public
 headers must be self-contained and remain C++17-compatible.
 

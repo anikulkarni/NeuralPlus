@@ -51,6 +51,17 @@ cmake --build --preset dev
 ctest --preset dev
 ```
 
+The `dev` and `release` build presets build the library, tests, and all
+examples. To build only the examples, use the matching examples preset:
+
+```bash
+cmake --build --preset dev-examples
+# Or: cmake --build --preset release-examples
+```
+
+Example executables are placed in `build/dev/examples/` or
+`build/release/examples/`.
+
 The equivalent generator-independent commands are documented in
 [Getting started](docs/GETTING_STARTED.md).
 
