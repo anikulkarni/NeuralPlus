@@ -1,0 +1,41 @@
+// Copyright 2026 Aniket Kulkarni
+// SPDX-License-Identifier: Apache-2.0
+
+/// @example simple_session.cpp
+/// Build a credential-free client, session, stateful tool, and tracers.
+
+/// @example openai_chatbot.cpp
+/// Run an interactive or one-shot chatbot with the real OpenAI client.
+
+/// @example openai_custom_config.cpp
+/// Select a custom OpenAI model, endpoint, and provider options.
+
+/// @example openai_multimodal.cpp
+/// Send image and file inputs through the real OpenAI client.
+
+/// @example anthropic_chatbot.cpp
+/// Run an interactive or one-shot chatbot with the real Anthropic client.
+
+/// @example anthropic_custom_config.cpp
+/// Select a custom Anthropic model, endpoint, and provider options.
+
+/// @example anthropic_multimodal.cpp
+/// Send image and PDF inputs through the real Anthropic client.
+
+/// @example gemini_chatbot.cpp
+/// Run an interactive or one-shot chatbot with the real Gemini client.
+
+/// @example gemini_custom_config.cpp
+/// Select a custom Gemini model, endpoint, and provider options.
+
+/// @example gemini_multimodal.cpp
+/// Send image, audio, video, and file inputs through the real Gemini client.
+
+/// @example openai_compatible_chatbot.cpp
+/// Run a chatbot against a real OpenAI-compatible server.
+
+/// @example openai_compatible_custom_config.cpp
+/// Configure a custom OpenAI-compatible server and model.
+
+/// @example openai_compatible_multimodal.cpp
+/// Send multimodal inputs to an OpenAI-compatible server.
