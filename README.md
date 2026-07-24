@@ -6,9 +6,16 @@ SPDX-License-Identifier: Apache-2.0
 # NeuralPlus
 
 [![C++17](https://img.shields.io/badge/C%2B%2B-17%2B-blue.svg)](https://isocpp.org/)
+[![GitHub repository](https://img.shields.io/badge/GitHub-View%20repository-181717?logo=github)](https://github.com/anikulkarni/NeuralPlus)
 [![CI](https://github.com/anikulkarni/NeuralPlus/actions/workflows/ci.yml/badge.svg)](https://github.com/anikulkarni/NeuralPlus/actions/workflows/ci.yml)
 [![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages-blue.svg)](https://neuralplus.dev/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+
+<p align="center">
+  <img src="docs/assets/neuralplus-social-preview.png"
+       alt="NeuralPlus — The composable AI systems toolkit for C++."
+       width="1200">
+</p>
 
 NeuralPlus is a small C++17 SDK for provider-independent AI conversations,
 tool use, session state, and tracing.
@@ -47,7 +54,7 @@ ctest --preset dev
 The equivalent generator-independent commands are documented in
 [Getting started](docs/GETTING_STARTED.md).
 
-## Smallest provider example
+## OpenAI client example
 
 The factory returns the common `AIClient` interface. The OpenAI configuration
 reads `OPENAI_API_KEY` when `config.api_key` is not set:
@@ -78,6 +85,78 @@ Credentials can also be assigned directly to the provider configuration; see
 The catalog includes current OpenAI, Anthropic, and Gemini configurations:
 [Model configurations](docs/MODELS.md). An arbitrary provider model remains
 one typed configuration constructor away.
+
+## More LLM client examples
+
+The built-in clients make real provider requests. They use
+`ANTHROPIC_API_KEY`, `GEMINI_API_KEY`/`GOOGLE_API_KEY`, and `OPENAI_API_KEY`
+when an explicit key is not assigned.
+
+### Anthropic conversation
+
+```cpp
+auto config = neuralplus::models::anthropic::claude_sonnet_5();
+auto client = neuralplus::make_client(std::move(config));
+
+neuralplus::Session session;
+session.set_system("Answer as a concise C++ mentor.");
+
+const auto response =
+    client->generate(session, "When should I use std::string_view?");
+std::cout << response.message.text() << '\n';
+```
+
+### Gemini conversation
+
+```cpp
+auto config = neuralplus::models::gemini::gemini_3_6_flash();
+auto client = neuralplus::make_client(std::move(config));
+neuralplus::Session session;
+
+const auto response =
+    client->generate(session, "Give me three practical RAII examples.");
+std::cout << response.message.text() << '\n';
+```
+
+### OpenAI-compatible server
+
+Use the same interface with a local or hosted Chat Completions-compatible
+server:
+
+```cpp
+neuralplus::OpenAICompatibleConfig config(
+    "local-model", "http://localhost:8000/v1");
+config.api_key_environment = "LOCAL_LLM_API_KEY";  // Optional.
+
+auto client = neuralplus::make_client(std::move(config));
+const auto response = client->generate("Explain move semantics simply.");
+std::cout << response.message.text() << '\n';
+```
+
+### Multimodal request
+
+```cpp
+auto config = neuralplus::models::openai::gpt_5_6_terra();
+auto client = neuralplus::make_client(std::move(config));
+
+neuralplus::Message::Contents contents;
+contents.push_back(
+    neuralplus::Content::text("Describe the architecture in this image."));
+contents.push_back(neuralplus::Content::image_url(
+    "https://example.com/architecture.png", "image/png"));
+
+const auto response =
+    client->generate(neuralplus::Message::user(std::move(contents)));
+std::cout << response.message.text() << '\n';
+```
+
+Complete, runnable programs:
+
+| Scenario | OpenAI | Anthropic | Gemini | Compatible server |
+| --- | --- | --- | --- | --- |
+| Chatbot | [source](https://github.com/anikulkarni/NeuralPlus/blob/main/examples/openai_chatbot.cpp) | [source](https://github.com/anikulkarni/NeuralPlus/blob/main/examples/anthropic_chatbot.cpp) | [source](https://github.com/anikulkarni/NeuralPlus/blob/main/examples/gemini_chatbot.cpp) | [source](https://github.com/anikulkarni/NeuralPlus/blob/main/examples/openai_compatible_chatbot.cpp) |
+| Custom model/config | [source](https://github.com/anikulkarni/NeuralPlus/blob/main/examples/openai_custom_config.cpp) | [source](https://github.com/anikulkarni/NeuralPlus/blob/main/examples/anthropic_custom_config.cpp) | [source](https://github.com/anikulkarni/NeuralPlus/blob/main/examples/gemini_custom_config.cpp) | [source](https://github.com/anikulkarni/NeuralPlus/blob/main/examples/openai_compatible_custom_config.cpp) |
+| Multimodal | [source](https://github.com/anikulkarni/NeuralPlus/blob/main/examples/openai_multimodal.cpp) | [source](https://github.com/anikulkarni/NeuralPlus/blob/main/examples/anthropic_multimodal.cpp) | [source](https://github.com/anikulkarni/NeuralPlus/blob/main/examples/gemini_multimodal.cpp) | [source](https://github.com/anikulkarni/NeuralPlus/blob/main/examples/openai_compatible_multimodal.cpp) |
 
 ## Add a stateful tool and tracers
 
