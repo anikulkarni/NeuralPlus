@@ -93,6 +93,58 @@ inline void apply_api_key(const Arguments& arguments,
     }
 }
 
+inline void require_secure_base_url(const std::string& base_url) {
+    std::string normalized = base_url;
+    std::transform(normalized.begin(),
+                   normalized.end(),
+                   normalized.begin(),
+                   [](unsigned char character) {
+                       return static_cast<char>(std::tolower(character));
+                   });
+    if (normalized.compare(0, 8, "https://") == 0) {
+        return;
+    }
+    if (normalized.compare(0, 7, "http://") != 0) {
+        throw std::invalid_argument(
+            "base URL must use https or loopback http");
+    }
+
+    const std::size_t authority_end =
+        normalized.find_first_of("/?#", 7U);
+    const std::string authority =
+        normalized.substr(7U, authority_end - 7U);
+    if (authority.empty() ||
+        authority.find('@') != std::string::npos) {
+        throw std::invalid_argument(
+            "base URL must use https or loopback http");
+    }
+
+    std::string host;
+    if (authority.front() == '[') {
+        const std::size_t close = authority.find(']');
+        if (close == std::string::npos) {
+            throw std::invalid_argument("invalid base URL host");
+        }
+        const std::string suffix = authority.substr(close + 1U);
+        if (!suffix.empty() && suffix.front() != ':') {
+            throw std::invalid_argument("invalid base URL host");
+        }
+        host = authority.substr(1U, close - 1U);
+    } else {
+        host = authority.substr(0, authority.find(':'));
+    }
+    if (host == "localhost" ||
+        host == "127.0.0.1" ||
+        host == "::1") {
+        return;
+    }
+
+    // Provider keys and prompts must not cross a cleartext network endpoint.
+    // https://www.rfc-editor.org/rfc/rfc9110#name-https-uri-scheme
+    throw std::invalid_argument(
+        "non-loopback provider base URL must use https");
+}
+
 inline std::vector<std::uint8_t> read_bytes(const std::string& path) {
     std::ifstream input(path, std::ios::binary);
     if (!input) {

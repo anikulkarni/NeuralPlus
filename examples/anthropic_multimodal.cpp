@@ -37,11 +37,15 @@ int main(int argc, const char* const* argv) {
                 "provide --image PATH, --pdf PATH, or both");
         }
 
-        AnthropicConfig config = models::anthropic::claude_sonnet_5();
-        if (arguments.has("--model")) {
-            config.model.id = arguments.require("--model");
-            config.model.display_name = config.model.id;
-        }
+        AnthropicConfig config =
+            arguments.has("--model")
+                ? AnthropicConfig(arguments.require("--model"))
+                : models::anthropic::claude_sonnet_5();
+        config.model.capabilities = ModelCapabilities{};
+        config.model.capabilities.image_input =
+            arguments.has("--image");
+        config.model.capabilities.file_input =
+            arguments.has("--pdf");
         apply_api_key(arguments, config.api_key);
 
         Message::Contents contents;

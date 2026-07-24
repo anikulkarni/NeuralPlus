@@ -21,14 +21,13 @@ void require(bool condition, const std::string& message) {
 void require_common(const ModelDescriptor& model,
                     Provider provider,
                     const std::string& id,
-                    std::size_t context_window,
-                    std::size_t max_output_tokens) {
+                    std::size_t context_window) {
     require(model.provider == provider, id + " provider");
     require(model.id == id, id + " id");
     require(!model.display_name.empty(), id + " display name");
     require(model.context_window == context_window, id + " context window");
-    require(model.max_output_tokens == max_output_tokens,
-            id + " max output tokens");
+    require(!model.max_output_tokens.has_value(),
+            id + " does not turn a provider ceiling into a call default");
     require(model.capabilities.text_input, id + " text input");
     require(model.capabilities.text_output, id + " text output");
     require(model.capabilities.image_input, id + " image input");
@@ -43,8 +42,7 @@ void test_openai_models() {
     require_common(sol.model,
                    Provider::openai,
                    "gpt-5.6-sol",
-                   1050000U,
-                   128000U);
+                   1050000U);
     require(sol.model.capabilities.file_input, "GPT-5.6 Sol file input");
     require(!sol.api_key.has_value(), "GPT-5.6 Sol key remains unset");
 
@@ -52,15 +50,13 @@ void test_openai_models() {
     require_common(terra.model,
                    Provider::openai,
                    "gpt-5.6-terra",
-                   1050000U,
-                   128000U);
+                   1050000U);
 
     const OpenAIConfig luna = models::openai::gpt_5_6_luna();
     require_common(luna.model,
                    Provider::openai,
                    "gpt-5.6-luna",
-                   1050000U,
-                   128000U);
+                   1050000U);
 }
 
 void test_anthropic_models() {
@@ -69,8 +65,7 @@ void test_anthropic_models() {
     require_common(fable.model,
                    Provider::anthropic,
                    "claude-fable-5",
-                   1000000U,
-                   128000U);
+                   1000000U);
     require(fable.model.capabilities.file_input,
             "Claude Fable 5 file input");
     require(fable.default_max_output_tokens == 1024U,
@@ -81,24 +76,21 @@ void test_anthropic_models() {
     require_common(opus.model,
                    Provider::anthropic,
                    "claude-opus-4-8",
-                   1000000U,
-                   128000U);
+                   1000000U);
 
     const AnthropicConfig sonnet =
         models::anthropic::claude_sonnet_5();
     require_common(sonnet.model,
                    Provider::anthropic,
                    "claude-sonnet-5",
-                   1000000U,
-                   128000U);
+                   1000000U);
 
     const AnthropicConfig haiku =
         models::anthropic::claude_haiku_4_5();
     require_common(haiku.model,
                    Provider::anthropic,
                    "claude-haiku-4-5-20251001",
-                   200000U,
-                   64000U);
+                   200000U);
 }
 
 void require_gemini(const GeminiConfig& config,
@@ -106,8 +98,7 @@ void require_gemini(const GeminiConfig& config,
     require_common(config.model,
                    Provider::gemini,
                    id,
-                   1048576U,
-                   65536U);
+                   1048576U);
     require(config.model.capabilities.audio_input,
             id + " audio input");
     require(config.model.capabilities.file_input,

@@ -37,11 +37,15 @@ int main(int argc, const char* const* argv) {
                 "provide --image PATH, --file PATH, or both");
         }
 
-        OpenAIConfig config = models::openai::gpt_5_6_terra();
-        if (arguments.has("--model")) {
-            config.model.id = arguments.require("--model");
-            config.model.display_name = config.model.id;
-        }
+        OpenAIConfig config =
+            arguments.has("--model")
+                ? OpenAIConfig(arguments.require("--model"))
+                : models::openai::gpt_5_6_terra();
+        config.model.capabilities = ModelCapabilities{};
+        config.model.capabilities.image_input =
+            arguments.has("--image");
+        config.model.capabilities.file_input =
+            arguments.has("--file");
         apply_api_key(arguments, config.api_key);
 
         Message::Contents contents;

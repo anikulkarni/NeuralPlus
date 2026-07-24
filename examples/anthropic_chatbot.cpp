@@ -33,10 +33,11 @@ int main(int argc, const char* const* argv) {
         }
 
         AnthropicConfig config =
-            models::anthropic::claude_sonnet_5();
+            arguments.has("--model")
+                ? AnthropicConfig(arguments.require("--model"))
+                : models::anthropic::claude_sonnet_5();
         if (arguments.has("--model")) {
-            config.model.id = arguments.require("--model");
-            config.model.display_name = config.model.id;
+            config.model.capabilities = ModelCapabilities{};
         }
         apply_api_key(arguments, config.api_key);
 

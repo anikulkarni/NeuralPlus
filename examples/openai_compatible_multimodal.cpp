@@ -46,6 +46,7 @@ int main(int argc, const char* const* argv) {
             arguments.value_or("--model", "local-model"),
             arguments.value_or(
                 "--base-url", "http://localhost:8000/v1"));
+        require_secure_base_url(config.base_url);
         config.model.capabilities.image_input = arguments.has("--image");
         config.model.capabilities.audio_input = arguments.has("--audio");
         config.model.capabilities.file_input = arguments.has("--file");

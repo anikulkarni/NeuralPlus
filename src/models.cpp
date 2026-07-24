@@ -13,11 +13,9 @@ namespace {
 template <typename Config>
 Config configure_text_vision_model(Config config,
                                    const char* display_name,
-                                   std::size_t context_window,
-                                   std::size_t max_output_tokens) {
+                                   std::size_t context_window) {
     config.model.display_name = display_name;
     config.model.context_window = context_window;
-    config.model.max_output_tokens = max_output_tokens;
     config.model.capabilities.text_input = true;
     config.model.capabilities.text_output = true;
     config.model.capabilities.image_input = true;
@@ -34,8 +32,10 @@ OpenAIConfig configure_openai(const char* model_id,
     OpenAIConfig config =
         configure_text_vision_model(OpenAIConfig(model_id),
                                     display_name,
-                                    1050000U,
-                                    128000U);
+                                    1050000U);
+    // The provider's 128,000-token output ceiling is not stored in
+    // ModelDescriptor::max_output_tokens because that field is a per-call
+    // default, not informational metadata.
     // The Responses API accepts direct file inputs independently of hosted
     // file-search tools.
     // https://developers.openai.com/api/docs/guides/file-inputs
@@ -45,13 +45,13 @@ OpenAIConfig configure_openai(const char* model_id,
 
 AnthropicConfig configure_anthropic(const char* model_id,
                                     const char* display_name,
-                                    std::size_t context_window,
-                                    std::size_t max_output_tokens) {
+                                    std::size_t context_window) {
     AnthropicConfig config =
         configure_text_vision_model(AnthropicConfig(model_id),
                                     display_name,
-                                    context_window,
-                                    max_output_tokens);
+                                    context_window);
+    // Provider output ceilings remain informational in the linked catalog.
+    // AnthropicConfig keeps its conservative 1,024-token request default.
     // Current Claude models accept PDFs through document content blocks.
     // https://platform.claude.com/docs/en/build-with-claude/pdf-support
     config.model.capabilities.file_input = true;
@@ -67,8 +67,9 @@ GeminiConfig configure_gemini(const char* model_id,
     GeminiConfig config =
         configure_text_vision_model(GeminiConfig(model_id),
                                     display_name,
-                                    1048576U,
-                                    65536U);
+                                    1048576U);
+    // The documented 65,536-token ceiling is intentionally not a generation
+    // default. Applications opt into a call limit through GenerateOptions.
     config.model.capabilities.audio_input = true;
     config.model.capabilities.file_input = true;
     return config;
@@ -90,25 +91,24 @@ OpenAIConfig neuralplus::models::openai::gpt_5_6_luna() {
 
 AnthropicConfig neuralplus::models::anthropic::claude_fable_5() {
     return configure_anthropic(
-        "claude-fable-5", "Claude Fable 5", 1000000U, 128000U);
+        "claude-fable-5", "Claude Fable 5", 1000000U);
 }
 
 AnthropicConfig neuralplus::models::anthropic::claude_opus_4_8() {
     return configure_anthropic(
-        "claude-opus-4-8", "Claude Opus 4.8", 1000000U, 128000U);
+        "claude-opus-4-8", "Claude Opus 4.8", 1000000U);
 }
 
 AnthropicConfig neuralplus::models::anthropic::claude_sonnet_5() {
     return configure_anthropic(
-        "claude-sonnet-5", "Claude Sonnet 5", 1000000U, 128000U);
+        "claude-sonnet-5", "Claude Sonnet 5", 1000000U);
 }
 
 AnthropicConfig neuralplus::models::anthropic::claude_haiku_4_5() {
     return configure_anthropic(
         "claude-haiku-4-5-20251001",
         "Claude Haiku 4.5",
-        200000U,
-        64000U);
+        200000U);
 }
 
 GeminiConfig neuralplus::models::gemini::gemini_3_6_flash() {

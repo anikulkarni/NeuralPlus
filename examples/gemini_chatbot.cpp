@@ -32,10 +32,12 @@ int main(int argc, const char* const* argv) {
             return 0;
         }
 
-        GeminiConfig config = models::gemini::gemini_3_6_flash();
+        GeminiConfig config =
+            arguments.has("--model")
+                ? GeminiConfig(arguments.require("--model"))
+                : models::gemini::gemini_3_6_flash();
         if (arguments.has("--model")) {
-            config.model.id = arguments.require("--model");
-            config.model.display_name = config.model.id;
+            config.model.capabilities = ModelCapabilities{};
         }
         apply_api_key(arguments, config.api_key);
 

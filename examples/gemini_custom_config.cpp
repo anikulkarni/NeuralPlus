@@ -44,6 +44,7 @@ int main(int argc, const char* const* argv) {
         if (arguments.has("--base-url")) {
             config.base_url = arguments.require("--base-url");
         }
+        require_secure_base_url(config.base_url);
         apply_api_key(arguments, config.api_key);
 
         auto client = make_client(std::move(config));

@@ -30,6 +30,11 @@ environment variable or process secret store is safer because command-line
 arguments may be visible to other local processes. Never commit a key or
 `.env` file.
 
+Endpoint overrides must use HTTPS. Plain HTTP is accepted only for
+`localhost`, `127.0.0.1`, or `[::1]`, which keeps local compatible servers
+convenient without sending credentials or prompt content over a cleartext
+network.
+
 ## Chatbots
 
 Each chatbot supports an interactive conversation, an optional system

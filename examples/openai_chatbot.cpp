@@ -32,10 +32,12 @@ int main(int argc, const char* const* argv) {
             return 0;
         }
 
-        OpenAIConfig config = models::openai::gpt_5_6_terra();
+        OpenAIConfig config =
+            arguments.has("--model")
+                ? OpenAIConfig(arguments.require("--model"))
+                : models::openai::gpt_5_6_terra();
         if (arguments.has("--model")) {
-            config.model.id = arguments.require("--model");
-            config.model.display_name = config.model.id;
+            config.model.capabilities = ModelCapabilities{};
         }
         apply_api_key(arguments, config.api_key);
 

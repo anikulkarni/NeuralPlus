@@ -53,11 +53,17 @@ int main(int argc, const char* const* argv) {
                 "provide --image, --audio, --video, or --file PATH");
         }
 
-        GeminiConfig config = models::gemini::gemini_3_6_flash();
-        if (arguments.has("--model")) {
-            config.model.id = arguments.require("--model");
-            config.model.display_name = config.model.id;
-        }
+        GeminiConfig config =
+            arguments.has("--model")
+                ? GeminiConfig(arguments.require("--model"))
+                : models::gemini::gemini_3_6_flash();
+        config.model.capabilities = ModelCapabilities{};
+        config.model.capabilities.image_input =
+            arguments.has("--image");
+        config.model.capabilities.audio_input =
+            arguments.has("--audio");
+        config.model.capabilities.file_input =
+            arguments.has("--video") || arguments.has("--file");
         apply_api_key(arguments, config.api_key);
 
         Message::Contents contents;

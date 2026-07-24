@@ -38,6 +38,7 @@ int main(int argc, const char* const* argv) {
             arguments.value_or("--model", "local-model"),
             arguments.value_or(
                 "--base-url", "http://localhost:8000/v1"));
+        require_secure_base_url(config.base_url);
         apply_api_key(arguments, config.api_key);
         config.api_key_environment =
             arguments.optional("--api-key-env");

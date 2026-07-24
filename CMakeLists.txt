@@ -196,6 +196,20 @@ if(NEURALPLUS_BUILD_TESTS)
     add_test(NAME neuralplus_model_tests COMMAND neuralplus_model_tests)
 
     if(NEURALPLUS_BUILD_EXAMPLES)
+        add_executable(
+            neuralplus_example_support_tests
+            tests/example_support_tests.cpp
+        )
+        target_link_libraries(
+            neuralplus_example_support_tests
+            PRIVATE NeuralPlus::neuralplus
+        )
+        neuralplus_enable_strict_warnings(neuralplus_example_support_tests)
+        add_test(
+            NAME neuralplus_example_support_tests
+            COMMAND neuralplus_example_support_tests
+        )
+
         add_test(
             NAME neuralplus_simple_session_example
             COMMAND neuralplus_simple_session

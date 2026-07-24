@@ -37,6 +37,7 @@ int main(int argc, const char* const* argv) {
             arguments.value_or("--model", "local-model"),
             arguments.value_or(
                 "--base-url", "http://localhost:8000/v1"));
+        require_secure_base_url(config.base_url);
         config.model.display_name = "Application-selected compatible model";
         config.model.capabilities.tools = true;
         config.model.capabilities.parallel_tool_calls = true;
