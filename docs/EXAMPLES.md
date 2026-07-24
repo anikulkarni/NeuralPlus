@@ -11,7 +11,7 @@ They do not replace HTTP with `MockHttpTransport`.
 
 ## Browse the complete source
 
-The generated [NeuralPlus documentation site](https://anikulkarni.github.io/NeuralPlus/)
+The generated [NeuralPlus documentation site](https://neuralplus.dev/)
 has an **Examples** section containing syntax-highlighted source generated
 directly from the checked-in files below. The repository remains the single
 source of truth.

@@ -7,7 +7,7 @@ SPDX-License-Identifier: Apache-2.0
 
 [![C++17](https://img.shields.io/badge/C%2B%2B-17%2B-blue.svg)](https://isocpp.org/)
 [![CI](https://github.com/anikulkarni/NeuralPlus/actions/workflows/ci.yml/badge.svg)](https://github.com/anikulkarni/NeuralPlus/actions/workflows/ci.yml)
-[![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages-blue.svg)](https://anikulkarni.github.io/NeuralPlus/)
+[![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages-blue.svg)](https://neuralplus.dev/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 NeuralPlus is a small C++17 SDK for provider-independent AI conversations,
@@ -125,7 +125,7 @@ real built-in provider clients:
 
 ## Documentation
 
-- [Published documentation and example source](https://anikulkarni.github.io/NeuralPlus/)
+- [Published documentation and example source](https://neuralplus.dev/)
 - [Getting started](docs/GETTING_STARTED.md)
 - [Architecture and class diagram](docs/ARCHITECTURE.md)
 - [Model configurations](docs/MODELS.md)
