@@ -101,7 +101,7 @@ struct HttpTransportOptions {
     /// Enables peer and host certificate verification.
     bool verify_tls{true};
 
-    /// Optional libcurl proxy URL.
+    /// Optional libcurl proxy URL; cleartext loopback URLs always bypass it.
     std::string proxy;
 
     /// HTTP User-Agent sent by the built-in transport.
@@ -123,6 +123,9 @@ struct HttpTransportOptions {
 /// NeuralPlus shared library as a plugin. Applications that require
 /// `curl_global_init_mem` or a dynamically unloadable HTTP module should
 /// inject a custom HttpTransport instead.
+///
+/// Cleartext requests to `localhost`, `127.0.0.1`, and `[::1]` bypass explicit
+/// and environment-configured proxies so local credentials remain local.
 ///
 /// @see https://curl.se/libcurl/c/libcurl-easy.html
 /// @see https://curl.se/libcurl/c/curl_global_init.html
