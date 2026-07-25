@@ -247,6 +247,7 @@ jobs:
       - name: Verify published entry points
         run: |
           test -s build/docs/api/index.html
+          test -s build/docs/api/classes.html
           test -s build/docs/api/examples.html
           test -s build/docs/api/robots.txt
           test -s build/docs/api/sitemap.xml
