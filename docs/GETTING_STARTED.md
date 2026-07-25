@@ -38,6 +38,17 @@ cmake --build --preset dev
 ctest --preset dev
 ```
 
+The normal `dev` and `release` build presets include every example. To build
+only the examples, use the corresponding dedicated build preset:
+
+```bash
+cmake --build --preset dev-examples
+# Or: cmake --build --preset release-examples
+```
+
+Preset example executables are written to `build/dev/examples/` or
+`build/release/examples/`.
+
 With another generator:
 
 ```bash
@@ -47,6 +58,12 @@ cmake -S . -B build \
 cmake --build build --config Release
 ctest --test-dir build --output-on-failure -C Release
 ```
+
+The normal build includes all examples when `NEURALPLUS_BUILD_EXAMPLES=ON`.
+They can also be built explicitly with
+`cmake --build build --target neuralplus_examples`; the executables are written
+to `build/examples/` (with a configuration subdirectory for multi-config
+generators).
 
 Provider protocol unit tests use `MockHttpTransport`; they need no API keys and
 make no live provider requests. Runnable examples compile against the real

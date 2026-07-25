@@ -29,8 +29,21 @@ Build them with:
 
 ```bash
 cmake --preset dev
-cmake --build --preset dev
+cmake --build --preset dev-examples
 ```
+
+The normal `cmake --build --preset dev` command also builds all examples.
+Example executables are written to `build/dev/examples/`.
+
+Without presets, configure examples and build the aggregate target explicitly:
+
+```bash
+cmake -S . -B build -DNEURALPLUS_BUILD_EXAMPLES=ON
+cmake --build build --target neuralplus_examples --parallel
+```
+
+This writes the executables to `build/examples/` (with a configuration
+subdirectory for multi-config generators).
 
 Run any example with `--help` to see all options. Prefer environment variables
 for credentials:
@@ -57,15 +70,15 @@ Each chatbot supports an interactive conversation, an optional system
 instruction, a model override, and a one-shot `--prompt`.
 
 ```bash
-./build/dev/neuralplus_openai_chatbot \
+./build/dev/examples/neuralplus_openai_chatbot \
   --system "Answer as a concise C++ tutor."
 
-./build/dev/neuralplus_anthropic_chatbot
+./build/dev/examples/neuralplus_anthropic_chatbot
 
-./build/dev/neuralplus_gemini_chatbot \
+./build/dev/examples/neuralplus_gemini_chatbot \
   --prompt "Explain move semantics in one paragraph."
 
-./build/dev/neuralplus_openai_compatible_chatbot \
+./build/dev/examples/neuralplus_openai_compatible_chatbot \
   --base-url http://localhost:8000/v1 \
   --model local-model
 ```
@@ -80,17 +93,17 @@ These programs show how to use a model ID that is not in the convenience
 catalog, set provider options, and override a provider endpoint:
 
 ```bash
-./build/dev/neuralplus_openai_custom_config \
+./build/dev/examples/neuralplus_openai_custom_config \
   --model MODEL_ID \
   --prompt "What workloads suit this model?"
 
-./build/dev/neuralplus_anthropic_custom_config \
+./build/dev/examples/neuralplus_anthropic_custom_config \
   --model MODEL_ID
 
-./build/dev/neuralplus_gemini_custom_config \
+./build/dev/examples/neuralplus_gemini_custom_config \
   --model MODEL_ID
 
-./build/dev/neuralplus_openai_compatible_custom_config \
+./build/dev/examples/neuralplus_openai_compatible_custom_config \
   --base-url http://localhost:8000/v1 \
   --model MODEL_ID
 ```
@@ -113,19 +126,19 @@ NeuralPlus adapter:
 Examples:
 
 ```bash
-./build/dev/neuralplus_openai_multimodal \
+./build/dev/examples/neuralplus_openai_multimodal \
   --image photo.png \
   --prompt "What is in this image?"
 
-./build/dev/neuralplus_anthropic_multimodal \
+./build/dev/examples/neuralplus_anthropic_multimodal \
   --pdf report.pdf \
   --prompt "Summarize the conclusions."
 
-./build/dev/neuralplus_gemini_multimodal \
+./build/dev/examples/neuralplus_gemini_multimodal \
   --video demo.mp4 \
   --prompt "Describe the sequence of events."
 
-./build/dev/neuralplus_openai_compatible_multimodal \
+./build/dev/examples/neuralplus_openai_compatible_multimodal \
   --base-url http://localhost:8000/v1 \
   --model vision-model \
   --image photo.jpg
