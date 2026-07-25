@@ -251,6 +251,15 @@ if(NEURALPLUS_BUILD_TESTS)
     neuralplus_enable_strict_warnings(neuralplus_model_tests)
     add_test(NAME neuralplus_model_tests COMMAND neuralplus_model_tests)
 
+    add_test(
+        NAME neuralplus_package_version_compatibility
+        COMMAND
+            "${CMAKE_COMMAND}"
+            "-DVERSION_FILE=${CMAKE_CURRENT_BINARY_DIR}/NeuralPlusConfigVersion.cmake"
+            -P
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/package_version_compatibility.cmake"
+    )
+
     if(NEURALPLUS_BUILD_EXAMPLES)
         add_executable(
             neuralplus_example_support_tests
@@ -348,7 +357,7 @@ install(
 write_basic_package_version_file(
     "${CMAKE_CURRENT_BINARY_DIR}/NeuralPlusConfigVersion.cmake"
     VERSION ${PROJECT_VERSION}
-    COMPATIBILITY SameMinorVersion
+    COMPATIBILITY SameMajorVersion
 )
 
 configure_package_config_file(
