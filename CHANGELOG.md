@@ -5,10 +5,17 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
-NeuralPlus follows semantic versioning after its first stable release. During
-pre-alpha development, minor versions may contain breaking changes.
+NeuralPlus releases use `MAJOR.MINOR.PATCH` versioning. Minor releases add
+backward-compatible features, patch releases contain backward-compatible fixes,
+and major releases may contain breaking public API changes.
 
 ## Unreleased
+
+## 0.2.0 - 2026-07-24
+
+First General Availability release.
+
+### Highlights
 
 - Ready-to-use model configurations for current OpenAI, Anthropic, and Gemini
   models, while retaining arbitrary model IDs.
@@ -23,8 +30,6 @@ pre-alpha development, minor versions may contain breaking changes.
 - Expanded normalized multimodal provider input and output handling, fixtures,
   and documentation.
 - Documentation and portability hardening.
-
-## 0.2.0
 
 ### Changed
 

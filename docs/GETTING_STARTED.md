@@ -5,6 +5,17 @@ SPDX-License-Identifier: Apache-2.0
 
 # Getting started
 
+## Get the release
+
+For a reproducible source checkout, use the General Availability release tag
+rather than the moving development branch:
+
+```bash
+git clone --branch 0.2.0 --depth 1 \
+  https://github.com/anikulkarni/NeuralPlus.git
+cd NeuralPlus
+```
+
 ## Requirements
 
 - CMake 3.20 or newer

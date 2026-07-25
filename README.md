@@ -20,8 +20,8 @@ SPDX-License-Identifier: Apache-2.0
 NeuralPlus is a small C++17 SDK for provider-independent AI conversations,
 tool use, session state, and tracing.
 
-> **Status:** pre-alpha. Version 0.2 is a deliberately breaking simplification
-> of the original bootstrap API.
+> **Status:** General Availability. Version 0.2.0 is the first supported
+> release of the simplified NeuralPlus API.
 
 ## The design in five pieces
 

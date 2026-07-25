@@ -7,7 +7,14 @@ SPDX-License-Identifier: Apache-2.0
 
 This is direction, not a delivery commitment.
 
-## 0.2 — simplified core
+## Release policy
+
+Version 0.2.0 is the first General Availability release. Compatible fixes ship
+as 0.2.x patch releases. The next planned feature release is 0.3.0.
+
+## 0.2.0 — simplified core
+
+Released on July 24, 2026.
 
 - [x] One provider-independent `AIClient` orchestration loop
 - [x] OpenAI, Anthropic, Gemini, and OpenAI-compatible clients
@@ -20,7 +27,7 @@ This is direction, not a delivery commitment.
 - [x] Convenience model configurations and real-provider usage examples
 - [x] CMake install package and Doxygen target
 
-## Near term
+## 0.3.0 — planned
 
 - Streaming responses and cancellation
 - Retry and rate-limit policy
