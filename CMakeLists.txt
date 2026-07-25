@@ -152,9 +152,7 @@ if(NEURALPLUS_BUILD_EXAMPLES)
         "${CMAKE_CURRENT_BINARY_DIR}/examples"
     )
 
-    function(neuralplus_add_example example_name)
-        set(example_target "neuralplus_${example_name}")
-        add_executable(${example_target} "examples/${example_name}.cpp")
+    function(neuralplus_configure_example example_target)
         target_link_libraries(${example_target} PRIVATE NeuralPlus::neuralplus)
         neuralplus_enable_strict_warnings(${example_target})
         set_target_properties(
@@ -163,6 +161,41 @@ if(NEURALPLUS_BUILD_EXAMPLES)
                 RUNTIME_OUTPUT_DIRECTORY
                     "${NEURALPLUS_EXAMPLE_OUTPUT_DIRECTORY}"
         )
+
+        if(WIN32 AND BUILD_SHARED_LIBS)
+            if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.21")
+                add_custom_command(
+                    TARGET ${example_target}
+                    POST_BUILD
+                    COMMAND
+                        "${CMAKE_COMMAND}" -E copy_if_different
+                        $<TARGET_RUNTIME_DLLS:${example_target}>
+                        $<TARGET_FILE_DIR:${example_target}>
+                    COMMAND_EXPAND_LISTS
+                    COMMENT
+                        "Copying runtime DLLs for ${example_target}"
+                    VERBATIM
+                )
+            else()
+                add_custom_command(
+                    TARGET ${example_target}
+                    POST_BUILD
+                    COMMAND
+                        "${CMAKE_COMMAND}" -E copy_if_different
+                        $<TARGET_FILE:neuralplus>
+                        $<TARGET_FILE_DIR:${example_target}>
+                    COMMENT
+                        "Copying NeuralPlus DLL for ${example_target}"
+                    VERBATIM
+                )
+            endif()
+        endif()
+    endfunction()
+
+    function(neuralplus_add_example example_name)
+        set(example_target "neuralplus_${example_name}")
+        add_executable(${example_target} "examples/${example_name}.cpp")
+        neuralplus_configure_example(${example_target})
         set(
             NEURALPLUS_EXAMPLE_TARGETS
             ${NEURALPLUS_EXAMPLE_TARGETS} ${example_target}
@@ -176,13 +209,7 @@ if(NEURALPLUS_BUILD_EXAMPLES)
     endfunction()
 
     add_executable(neuralplus_simple_session examples/simple_session.cpp)
-    target_link_libraries(neuralplus_simple_session PRIVATE NeuralPlus::neuralplus)
-    neuralplus_enable_strict_warnings(neuralplus_simple_session)
-    set_target_properties(
-        neuralplus_simple_session
-        PROPERTIES
-            RUNTIME_OUTPUT_DIRECTORY "${NEURALPLUS_EXAMPLE_OUTPUT_DIRECTORY}"
-    )
+    neuralplus_configure_example(neuralplus_simple_session)
     list(APPEND NEURALPLUS_EXAMPLE_TARGETS neuralplus_simple_session)
 
     neuralplus_add_example(openai_chatbot)
