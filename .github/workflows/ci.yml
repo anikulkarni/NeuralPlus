@@ -248,10 +248,13 @@ jobs:
         run: |
           test -s build/docs/api/index.html
           test -s build/docs/api/examples.html
+          test -s build/docs/api/classes.html
           test -s build/docs/api/robots.txt
           test -s build/docs/api/sitemap.xml
           grep -F "Sitemap: https://neuralplus.dev/sitemap.xml" build/docs/api/robots.txt
           grep -F "<loc>https://neuralplus.dev/</loc>" build/docs/api/sitemap.xml
+          grep -F "<loc>https://neuralplus.dev/examples.html</loc>" build/docs/api/sitemap.xml
+          grep -F "<loc>https://neuralplus.dev/classes.html</loc>" build/docs/api/sitemap.xml
 
       - name: Disable Jekyll processing
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
