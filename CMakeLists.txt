@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.20)
 project(
     NeuralPlus
     VERSION 0.2.0
-    DESCRIPTION "A small C++17 SDK for AI clients, sessions, tools, and tracing"
+    DESCRIPTION "An open-source, provider-independent C++17 AI SDK and LLM client library"
     LANGUAGES CXX
 )
 
@@ -298,6 +298,8 @@ if(NEURALPLUS_BUILD_DOCS)
     set(
         DOXYGEN_HTML_EXTRA_FILES
         "${CMAKE_CURRENT_SOURCE_DIR}/docs/assets/neuralplus-social-preview.png"
+        "${CMAKE_CURRENT_SOURCE_DIR}/docs/assets/robots.txt"
+        "${CMAKE_CURRENT_SOURCE_DIR}/docs/assets/sitemap.xml"
     )
     set(DOXYGEN_HTML_OUTPUT api)
     set(DOXYGEN_PROJECT_BRIEF "${PROJECT_DESCRIPTION}")

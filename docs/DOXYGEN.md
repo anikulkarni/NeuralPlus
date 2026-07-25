@@ -49,9 +49,10 @@ build/docs/api/index.html
 ```
 
 The page includes a direct GitHub repository link and social-preview metadata
-for `neuralplus.dev`. Doxygen copies
-`docs/assets/neuralplus-social-preview.png` into the published site, and CMake
-injects the Open Graph and Twitter card tags after generating the main page.
+for `neuralplus.dev`. Doxygen copies the social-preview image, `robots.txt`,
+and `sitemap.xml` from `docs/assets` into the published site, and CMake injects
+the description, canonical, Open Graph, and Twitter card tags after generating
+the main page.
 
 Open `build/docs/api/examples.html` to browse the generated source examples.
 

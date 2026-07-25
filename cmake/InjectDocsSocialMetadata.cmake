@@ -25,23 +25,23 @@ endif()
 set(metadata [=[
 <!-- NeuralPlus social preview metadata -->
 <link rel="canonical" href="https://neuralplus.dev/"/>
-<meta name="description" content="The composable AI systems toolkit for C++."/>
+<meta name="description" content="An open-source, provider-independent C++17 AI SDK and LLM client library for OpenAI, Anthropic, Gemini, tool calling, sessions, and tracing."/>
 <meta property="og:type" content="website"/>
 <meta property="og:site_name" content="NeuralPlus"/>
-<meta property="og:title" content="NeuralPlus — The composable AI systems toolkit for C++."/>
-<meta property="og:description" content="A provider-independent C++17 SDK for AI conversations, tool use, session state, and tracing."/>
+<meta property="og:title" content="NeuralPlus — C++17 AI SDK and LLM client library"/>
+<meta property="og:description" content="A provider-independent C++17 client for OpenAI, Anthropic, Gemini, tool calling, sessions, and tracing."/>
 <meta property="og:url" content="https://neuralplus.dev/"/>
 <meta property="og:image" content="https://neuralplus.dev/neuralplus-social-preview.png"/>
 <meta property="og:image:secure_url" content="https://neuralplus.dev/neuralplus-social-preview.png"/>
 <meta property="og:image:type" content="image/png"/>
 <meta property="og:image:width" content="1200"/>
 <meta property="og:image:height" content="630"/>
-<meta property="og:image:alt" content="NeuralPlus — The composable AI systems toolkit for C++."/>
+<meta property="og:image:alt" content="NeuralPlus — an open-source C++17 AI SDK and LLM client library."/>
 <meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:title" content="NeuralPlus — The composable AI systems toolkit for C++."/>
-<meta name="twitter:description" content="A provider-independent C++17 SDK for AI conversations, tool use, session state, and tracing."/>
+<meta name="twitter:title" content="NeuralPlus — C++17 AI SDK and LLM client library"/>
+<meta name="twitter:description" content="A provider-independent C++17 client for OpenAI, Anthropic, Gemini, tool calling, sessions, and tracing."/>
 <meta name="twitter:image" content="https://neuralplus.dev/neuralplus-social-preview.png"/>
-<meta name="twitter:image:alt" content="NeuralPlus — The composable AI systems toolkit for C++."/>
+<meta name="twitter:image:alt" content="NeuralPlus — an open-source C++17 AI SDK and LLM client library."/>
 ]=])
 
 string(FIND "${html}" "</head>" head_end)
