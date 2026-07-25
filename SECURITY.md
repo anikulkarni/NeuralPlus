@@ -7,8 +7,13 @@ SPDX-License-Identifier: Apache-2.0
 
 ## Supported versions
 
-NeuralPlus is pre-alpha. Security fixes are applied to the latest development
-branch until versioned release support begins.
+Security fixes are applied to the latest 0.2.x release and the development
+branch. Users should update to the newest available patch release.
+
+| Version | Supported |
+| --- | --- |
+| 0.2.x | Yes |
+| Earlier versions | No |
 
 ## Report a vulnerability
 
