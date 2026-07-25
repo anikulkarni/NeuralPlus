@@ -13,12 +13,12 @@ SPDX-License-Identifier: Apache-2.0
 
 <p align="center">
   <img src="docs/assets/neuralplus-social-preview.png"
-       alt="NeuralPlus — The composable AI systems toolkit for C++."
+       alt="NeuralPlus — an open-source C++17 AI SDK and LLM client library."
        width="1200">
 </p>
 
-NeuralPlus is a small C++17 SDK for provider-independent AI conversations,
-tool use, session state, and tracing.
+NeuralPlus is an open-source, provider-independent C++17 AI SDK and LLM client
+library for OpenAI, Anthropic, Gemini, tool calling, session state, and tracing.
 
 > **Status:** General Availability. Version 0.2.0 is the first supported
 > release of the simplified NeuralPlus API.
